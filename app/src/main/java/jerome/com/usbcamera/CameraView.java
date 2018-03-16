@@ -2,7 +2,6 @@ package jerome.com.usbcamera;
 
 import android.content.Context;
 import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -36,9 +35,10 @@ class CameraView extends SurfaceView implements SurfaceHolder.Callback, Runnable
 
 	private static final int RAW_AUDIO_SHUTTER = 1;
 	private static final int RAW_AUDIO_VIDEO_RECORD = 2;
-	private SoundPool mSoundPool;
 	private int mCurrStreamId;
 	private HashMap<Integer,Integer> mSoundMap = new HashMap<Integer, Integer>();
+
+	private OnPictureSaved onPictureSaved = null;
 
 	public CameraView(Context context) {
 		super(context);
@@ -62,10 +62,6 @@ class CameraView extends SurfaceView implements SurfaceHolder.Callback, Runnable
 	public void surfaceCreated(SurfaceHolder holder) {
 
 		Log.d(TAG, "surfaceCreated");
-
-		mSoundPool = new SoundPool(2, AudioManager.STREAM_SYSTEM, 0);
-		mSoundMap.put(RAW_AUDIO_SHUTTER, mSoundPool.load(mContext, R.raw.camera_shutter, 1));
-		mSoundMap.put(RAW_AUDIO_VIDEO_RECORD, mSoundPool.load(mContext, R.raw.video_record, 1));
 
 		int ret = mUsbCameraNative.nativePrepareCamera(
 				ImageProc.IMG_WIDTH,
@@ -99,12 +95,7 @@ class CameraView extends SurfaceView implements SurfaceHolder.Callback, Runnable
 		}
 		mUsbCameraNative.nativeStopCamera();
 		mCameraExists = false;
-
-		if (mSoundPool != null) {
-			mSoundPool.release();
-			mSoundPool = null;
-		}
-	}
+    }
 
 	@Override
 	public void onDataEncode(byte[] data) {
@@ -125,7 +116,6 @@ class CameraView extends SurfaceView implements SurfaceHolder.Callback, Runnable
 		if(!mCameraExists ||isVideoRecording()){
 			return;
 		}
-		playSound(RAW_AUDIO_VIDEO_RECORD);
 		mIsVideoRecording = true;
 		try {
 			mediaMuxerCore = new MediaMuxerCore(
@@ -143,9 +133,6 @@ class CameraView extends SurfaceView implements SurfaceHolder.Callback, Runnable
 
 	public void stopVideoRecord(boolean soundEffect){
 		Log.d(TAG, "stopVideoRecord");
-		if(soundEffect){
-			playSound(RAW_AUDIO_VIDEO_RECORD);
-		}
 		mUsbCameraNative.nativeStopRecord();
 
 		if(mediaMuxerCore != null){
@@ -165,19 +152,6 @@ class CameraView extends SurfaceView implements SurfaceHolder.Callback, Runnable
 			return;
 		}
 		mCaptureFlag = true;
-		playSound(RAW_AUDIO_SHUTTER);
-	}
-
-	private void playSound(int index){
-
-		final int soundId = index;
-
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				mCurrStreamId = mSoundPool.play(mSoundMap.get(soundId), 1.0f, 1.0f, 0, 0, 1.0f);
-			}
-		}, 500);
 	}
 
 	private void savePictureFile(Bitmap bitmap, String fileName){
@@ -248,7 +222,11 @@ class CameraView extends SurfaceView implements SurfaceHolder.Callback, Runnable
 			}
 
 			if(mCaptureFlag){
-				savePictureFile(bmp, FileUtils.getPhotoDefaultName());
+			    String path = FileUtils.getPhotoDefaultName();
+//				savePictureFile(bmp, path);
+				if (onPictureSaved != null) {
+				    onPictureSaved.onPictureSaved(bmp);
+                }
 				mCaptureFlag = false;
 			}
 
@@ -257,5 +235,13 @@ class CameraView extends SurfaceView implements SurfaceHolder.Callback, Runnable
             	break;
             }	        
         }
+    }
+
+    public void setSavedCallback(OnPictureSaved cb) {
+        onPictureSaved = cb;
+    }
+
+    public interface OnPictureSaved {
+	    void onPictureSaved(Bitmap bmp);
     }
 }

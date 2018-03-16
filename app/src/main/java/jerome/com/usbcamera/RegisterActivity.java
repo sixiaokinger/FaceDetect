@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -55,8 +56,6 @@ public class RegisterActivity extends Activity implements SurfaceHolder.Callback
 	private final static int MSG_EVENT_FD_ERROR = 0x1004;
 	private final static int MSG_EVENT_FR_ERROR = 0x1005;
 	private UIHandler mUIHandler;
-	// Intent data.
-	private String 		mFilePath;
 
 	private SurfaceView mSurfaceView;
 	private SurfaceHolder mSurfaceHolder;
@@ -88,7 +87,6 @@ public class RegisterActivity extends Activity implements SurfaceHolder.Callback
 		mHListView.setOnItemClickListener(mRegisterViewAdapter);
 
 		mUIHandler = new UIHandler();
-		mBitmap = Application.decodeImage(mFilePath);
 		src.set(0,0,mBitmap.getWidth(),mBitmap.getHeight());
 		mSurfaceView = (SurfaceView)this.findViewById(R.id.surfaceView);
 		mSurfaceView.getHolder().addCallback(this);
@@ -223,11 +221,11 @@ public class RegisterActivity extends Activity implements SurfaceHolder.Callback
 	 */
 	private boolean getIntentData(Bundle bundle) {
 		try {
-			mFilePath = bundle.getString("imagePath");
-			if (mFilePath == null || mFilePath.isEmpty()) {
+		    byte[] b = bundle.getByteArray("image");
+			mBitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+			if (mBitmap == null) {
 				return false;
 			}
-			Log.i(TAG, "getIntentData:" + mFilePath);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -30,6 +30,9 @@ public class Application extends android.app.Application {
 		super.onCreate();
 		mFaceDB = new FaceDB(this.getExternalCacheDir().getPath());
 		mImage = null;
+
+        MyCrashHandler myCrashHandler = MyCrashHandler.getInstance();
+        myCrashHandler.init(getApplicationContext());
 	}
 
 	public void setCaptureImage(Uri uri) {
