@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/register_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/regisit_bg" />
+
+    <LinearLayout
+        android:id="@+id/LinearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="180px">
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="290px"
+            android:layout_height="60px"
+            android:layout_marginRight="60px"
+            android:layout_weight="1"
+            android:background="@drawable/btn"
+            android:text="注册人脸"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="290px"
+            android:layout_height="60px"
+            android:layout_marginLeft="60px"
+            android:layout_weight="1"
+            android:background="@drawable/btn"
+            android:text="检测识别"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+
+</RelativeLayout>
