@@ -19,8 +19,8 @@
         android:layout_width="1px"
         android:layout_height="1px"/>
 
-    <com.guo.android_extend.widget.CameraGLSurfaceView
-        android:id="@+id/glsurfaceView"
+    <jerome.com.usbcamera.CameraView
+        android:id="@+id/cameraView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"

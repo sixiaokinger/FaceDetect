@@ -1,7 +1,6 @@
 package jerome.com.usbcamera;
 
 import android.app.Activity;
-import android.app.Instrumentation;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,7 +13,6 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -45,7 +43,6 @@ import com.guo.android_extend.java.AbsLoop;
 import com.guo.android_extend.java.ExtByteArrayOutputStream;
 import com.guo.android_extend.tools.CameraHelper;
 import com.guo.android_extend.widget.CameraFrameData;
-import com.guo.android_extend.widget.CameraGLSurfaceView;
 import com.guo.android_extend.widget.CameraSurfaceView;
 import com.guo.android_extend.widget.CameraSurfaceView.OnCameraListener;
 
@@ -57,12 +54,12 @@ import java.util.List;
  * Created by gqj3375 on 2017/4/28.
  */
 
-public class DetecterActivity extends Activity implements OnCameraListener, View.OnTouchListener, Camera.AutoFocusCallback, View.OnClickListener {
+public class DetecterActivity extends Activity implements View.OnTouchListener, Camera.AutoFocusCallback, View.OnClickListener {
 	private final String TAG = this.getClass().getSimpleName();
 
 	private int mWidth, mHeight, mFormat;
 	private CameraSurfaceView mSurfaceView;
-	private CameraGLSurfaceView mGLSurfaceView;
+	private CameraView mCameraView;
 	private Camera mCamera;
 
 	AFT_FSDKVersion version = new AFT_FSDKVersion();
@@ -234,7 +231,7 @@ public class DetecterActivity extends Activity implements OnCameraListener, View
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 
-		mCameraID = getIntent().getIntExtra("Camera", 0) == 0 ? Camera.CameraInfo.CAMERA_FACING_BACK : Camera.CameraInfo.CAMERA_FACING_FRONT;
+//		mCameraID = getIntent().getIntExtra("Camera", 0) == 0 ? Camera.CameraInfo.CAMERA_FACING_BACK : Camera.CameraInfo.CAMERA_FACING_FRONT;
 		mCameraRotate = getIntent().getIntExtra("Camera", 0) == 0 ? 180 : 0;
 		mCameraMirror = getIntent().getIntExtra("Camera", 0) == 0 ? false : true;
 		mWidth = 1280;
@@ -244,12 +241,12 @@ public class DetecterActivity extends Activity implements OnCameraListener, View
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_camera);
-		mGLSurfaceView = (CameraGLSurfaceView) findViewById(R.id.glsurfaceView);
-		mGLSurfaceView.setOnTouchListener(this);
-		mSurfaceView = (CameraSurfaceView) findViewById(R.id.surfaceView);
-		mSurfaceView.setOnCameraListener(this);
-		mSurfaceView.setupGLSurafceView(mGLSurfaceView, true, mCameraMirror, mCameraRotate);
-		mSurfaceView.debug_print_fps(true, false);
+		mCameraView = (CameraView) findViewById(R.id.cameraView);
+		mCameraView.setOnTouchListener(this);
+//		mSurfaceView = (CameraSurfaceView) findViewById(R.id.surfaceView);
+//		mSurfaceView.setOnCameraListener(this);
+//		mSurfaceView.setupGLSurafceView(mCameraView, true, mCameraMirror, mCameraRotate);
+//		mSurfaceView.debug_print_fps(true, false);
 
 		//snap
 		mTextView = (TextView) findViewById(R.id.textView);
@@ -297,95 +294,43 @@ public class DetecterActivity extends Activity implements OnCameraListener, View
 		ASGE_FSDKError err2 = mGenderEngine.ASGE_FSDK_UninitGenderEngine();
 		Log.d(TAG, "ASGE_FSDK_UninitGenderEngine =" + err2.getCode());
 	}
-
-	@Override
-	public Camera setupCamera() {
-		// TODO Auto-generated method stub
-		mCamera = Camera.open(mCameraID);
-		try {
-			Camera.Parameters parameters = mCamera.getParameters();
-			parameters.setPreviewSize(mWidth, mHeight);
-			parameters.setPreviewFormat(mFormat);
-
-			for( Camera.Size size : parameters.getSupportedPreviewSizes()) {
-				Log.d(TAG, "SIZE:" + size.width + "x" + size.height);
-			}
-			for( Integer format : parameters.getSupportedPreviewFormats()) {
-				Log.d(TAG, "FORMAT:" + format);
-			}
-
-			List<int[]> fps = parameters.getSupportedPreviewFpsRange();
-			for(int[] count : fps) {
-				Log.d(TAG, "T:");
-				for (int data : count) {
-					Log.d(TAG, "V=" + data);
-				}
-			}
-			//parameters.setPreviewFpsRange(15000, 30000);
-			//parameters.setExposureCompensation(parameters.getMaxExposureCompensation());
-			//parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
-			//parameters.setAntibanding(Camera.Parameters.ANTIBANDING_AUTO);
-			//parmeters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-			//parameters.setSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
-			//parameters.setColorEffect(Camera.Parameters.EFFECT_NONE);
-			mCamera.setParameters(parameters);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if (mCamera != null) {
-			mWidth = mCamera.getParameters().getPreviewSize().width;
-			mHeight = mCamera.getParameters().getPreviewSize().height;
-		}
-		return mCamera;
-	}
-
-	@Override
-	public void setupChanged(int format, int width, int height) {
-
-	}
-
-	@Override
-	public boolean startPreviewLater() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Object onPreview(byte[] data, int width, int height, int format, long timestamp) {
-		AFT_FSDKError err = engine.AFT_FSDK_FaceFeatureDetect(data, width, height, AFT_FSDKEngine.CP_PAF_NV21, result);
-		Log.d(TAG, "AFT_FSDK_FaceFeatureDetect =" + err.getCode());
-		Log.d(TAG, "Face=" + result.size());
-		for (AFT_FSDKFace face : result) {
-			Log.d(TAG, "Face:" + face.toString());
-		}
-		if (mImageNV21 == null) {
-			if (!result.isEmpty()) {
-				mAFT_FSDKFace = result.get(0).clone();
-				mImageNV21 = data.clone();
-			} else {
-				mHandler.postDelayed(hide, 3000);
-			}
-		}
-		//copy rects
-		Rect[] rects = new Rect[result.size()];
-		for (int i = 0; i < result.size(); i++) {
-			rects[i] = new Rect(result.get(i).getRect());
-		}
-		//clear result.
-		result.clear();
-		//return the rects for render.
-		return rects;
-	}
-
-	@Override
-	public void onBeforeRender(CameraFrameData data) {
-
-	}
-
-	@Override
-	public void onAfterRender(CameraFrameData data) {
-		mGLSurfaceView.getGLES2Render().draw_rect((Rect[])data.getParams(), Color.GREEN, 2);
-	}
+//
+//	@Override
+//	public Object onPreview(byte[] data, int width, int height, int format, long timestamp) {
+//		AFT_FSDKError err = engine.AFT_FSDK_FaceFeatureDetect(data, width, height, AFT_FSDKEngine.CP_PAF_NV21, result);
+//		Log.d(TAG, "AFT_FSDK_FaceFeatureDetect =" + err.getCode());
+//		Log.d(TAG, "Face=" + result.size());
+//		for (AFT_FSDKFace face : result) {
+//			Log.d(TAG, "Face:" + face.toString());
+//		}
+//		if (mImageNV21 == null) {
+//			if (!result.isEmpty()) {
+//				mAFT_FSDKFace = result.get(0).clone();
+//				mImageNV21 = data.clone();
+//			} else {
+//				mHandler.postDelayed(hide, 3000);
+//			}
+//		}
+//		//copy rects
+//		Rect[] rects = new Rect[result.size()];
+//		for (int i = 0; i < result.size(); i++) {
+//			rects[i] = new Rect(result.get(i).getRect());
+//		}
+//		//clear result.
+//		result.clear();
+//		//return the rects for render.
+//		return rects;
+//	}
+//
+//	@Override
+//	public void onBeforeRender(CameraFrameData data) {
+//
+//	}
+//
+//	@Override
+//	public void onAfterRender(CameraFrameData data) {
+//		mCameraView.getGLES2Render().draw_rect((Rect[])data.getParams(), Color.GREEN, 2);
+//	}
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {

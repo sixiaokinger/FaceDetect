@@ -205,15 +205,16 @@ class CameraView extends SurfaceView implements SurfaceHolder.Callback, Runnable
 				winWidth = CameraView.this.getWidth();
 				winHeight = CameraView.this.getHeight();
 
-				if(winWidth * 3 / 4 <= winHeight){
-					dw = 0;
-					dh = (winHeight - winWidth * 3 / 4) / 2;
-					rect = new Rect(dw, dh, dw + winWidth - 1, dh + winWidth * 3 / 4 - 1);
-				}else{
-					dw = (winWidth - winHeight * 4 / 3) / 2;
-					dh = 0;
-					rect = new Rect(dw, dh, dw + winHeight * 4 / 3 - 1, dh + winHeight - 1);
-				}
+//				if(winWidth * 3 / 4 <= winHeight){
+//					dw = 0;
+//					dh = (winHeight - winWidth * 3 / 4) / 2;
+//					rect = new Rect(dw, dh, dw + winWidth - 1, dh + winWidth * 3 / 4 - 1);
+//				}else{
+//					dw = (winWidth - winHeight * 4 / 3) / 2;
+//					dh = 0;
+//					rect = new Rect(dw, dh, dw + winHeight * 4 / 3 - 1, dh + winHeight - 1);
+//				}
+                rect = new Rect(0, 0, winWidth, winHeight);
 			}
 			Canvas canvas = getHolder().lockCanvas();
 			if (canvas != null) {

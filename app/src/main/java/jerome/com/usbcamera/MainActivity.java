@@ -90,23 +90,14 @@ public class MainActivity extends Activity implements OnClickListener {
 				if( ((Application)getApplicationContext()).mFaceDB.mRegister.isEmpty() ) {
 					Toast.makeText(this, "没有注册人脸，请先注册！", Toast.LENGTH_SHORT).show();
 				} else {
-					new AlertDialog.Builder(this)
-							.setTitle("请选择相机")
-							.setIcon(android.R.drawable.ic_dialog_info)
-							.setItems(new String[]{"后置相机", "前置相机"}, new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(DialogInterface dialog, int which) {
-											startDetector(which);
-										}
-									})
-							.show();
+				    startDetector();
 				}
 				break;
 			case R.id.button1:
 				new AlertDialog.Builder(this)
 						.setTitle("请选择注册方式")
 						.setIcon(android.R.drawable.ic_dialog_info)
-						.setItems(new String[]{"打开图片", "拍摄照片"}, new DialogInterface.OnClickListener() {
+						.setItems(new String[]{"扫描证件", "拍摄照片"}, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								switch (which){
@@ -265,9 +256,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		startActivityForResult(it, REQUEST_CODE_OP);
 	}
 
-	private void startDetector(int camera) {
+	private void startDetector() {
 		Intent it = new Intent(MainActivity.this, DetecterActivity.class);
-		it.putExtra("Camera", camera);
 		startActivityForResult(it, REQUEST_CODE_OP);
 	}
 
