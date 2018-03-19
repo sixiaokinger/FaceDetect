@@ -19,8 +19,8 @@
         android:layout_width="1px"
         android:layout_height="1px"/>
 
-    <jerome.com.usbcamera.CameraView
-        android:id="@+id/cameraView"
+    <jerome.com.usbcamera.FaceDetectView
+        android:id="@+id/face_detect_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"

@@ -42,9 +42,7 @@ import com.arcsoft.genderestimation.ASGE_FSDKVersion;
 import com.guo.android_extend.java.AbsLoop;
 import com.guo.android_extend.java.ExtByteArrayOutputStream;
 import com.guo.android_extend.tools.CameraHelper;
-import com.guo.android_extend.widget.CameraFrameData;
 import com.guo.android_extend.widget.CameraSurfaceView;
-import com.guo.android_extend.widget.CameraSurfaceView.OnCameraListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,12 +52,12 @@ import java.util.List;
  * Created by gqj3375 on 2017/4/28.
  */
 
-public class DetecterActivity extends Activity implements View.OnTouchListener, Camera.AutoFocusCallback, View.OnClickListener {
+public class DetecterActivity extends Activity implements View.OnTouchListener, Camera.AutoFocusCallback, View.OnClickListener, FaceDetectView.OnCameraListener {
 	private final String TAG = this.getClass().getSimpleName();
 
 	private int mWidth, mHeight, mFormat;
 	private CameraSurfaceView mSurfaceView;
-	private CameraView mCameraView;
+	private FaceDetectView mFaceDetectView;
 	private Camera mCamera;
 
 	AFT_FSDKVersion version = new AFT_FSDKVersion();
@@ -116,7 +114,7 @@ public class DetecterActivity extends Activity implements View.OnTouchListener, 
 		public void loop() {
 			if (mImageNV21 != null) {
 				long time = System.currentTimeMillis();
-				AFR_FSDKError error = engine.AFR_FSDK_ExtractFRFeature(mImageNV21, mWidth, mHeight, AFR_FSDKEngine.CP_PAF_NV21, mAFT_FSDKFace.getRect(), mAFT_FSDKFace.getDegree(), result);
+				AFR_FSDKError error = engine.AFR_FSDK_ExtractFRFeature(mImageNV21, ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT, AFR_FSDKEngine.CP_PAF_NV21, mAFT_FSDKFace.getRect(), mAFT_FSDKFace.getDegree(), result);
 				Log.d(TAG, "AFR_FSDK_ExtractFRFeature cost :" + (System.currentTimeMillis() - time) + "ms");
 				Log.d(TAG, "Face=" + result.getFeatureData()[0] + "," + result.getFeatureData()[1] + "," + result.getFeatureData()[2] + "," + error.getCode());
 				AFR_FSDKMatching score = new AFR_FSDKMatching();
@@ -241,8 +239,9 @@ public class DetecterActivity extends Activity implements View.OnTouchListener, 
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_camera);
-		mCameraView = (CameraView) findViewById(R.id.cameraView);
-		mCameraView.setOnTouchListener(this);
+        mFaceDetectView = (FaceDetectView) findViewById(R.id.face_detect_view);
+        mFaceDetectView.setOnTouchListener(this);
+        mFaceDetectView.setCameraListener(this);
 //		mSurfaceView = (CameraSurfaceView) findViewById(R.id.surfaceView);
 //		mSurfaceView.setOnCameraListener(this);
 //		mSurfaceView.setupGLSurafceView(mCameraView, true, mCameraMirror, mCameraRotate);
@@ -294,43 +293,34 @@ public class DetecterActivity extends Activity implements View.OnTouchListener, 
 		ASGE_FSDKError err2 = mGenderEngine.ASGE_FSDK_UninitGenderEngine();
 		Log.d(TAG, "ASGE_FSDK_UninitGenderEngine =" + err2.getCode());
 	}
-//
-//	@Override
-//	public Object onPreview(byte[] data, int width, int height, int format, long timestamp) {
-//		AFT_FSDKError err = engine.AFT_FSDK_FaceFeatureDetect(data, width, height, AFT_FSDKEngine.CP_PAF_NV21, result);
-//		Log.d(TAG, "AFT_FSDK_FaceFeatureDetect =" + err.getCode());
-//		Log.d(TAG, "Face=" + result.size());
-//		for (AFT_FSDKFace face : result) {
-//			Log.d(TAG, "Face:" + face.toString());
-//		}
-//		if (mImageNV21 == null) {
-//			if (!result.isEmpty()) {
-//				mAFT_FSDKFace = result.get(0).clone();
-//				mImageNV21 = data.clone();
-//			} else {
-//				mHandler.postDelayed(hide, 3000);
-//			}
-//		}
-//		//copy rects
-//		Rect[] rects = new Rect[result.size()];
-//		for (int i = 0; i < result.size(); i++) {
-//			rects[i] = new Rect(result.get(i).getRect());
-//		}
-//		//clear result.
-//		result.clear();
-//		//return the rects for render.
-//		return rects;
-//	}
-//
-//	@Override
-//	public void onBeforeRender(CameraFrameData data) {
-//
-//	}
-//
-//	@Override
-//	public void onAfterRender(CameraFrameData data) {
-//		mCameraView.getGLES2Render().draw_rect((Rect[])data.getParams(), Color.GREEN, 2);
-//	}
+
+	@Override
+	public Object onPreview(byte[] data, int width, int height) {
+        Log.e(TAG, "onPreview: data length " + data.length + " " +width + " " + height);
+        AFT_FSDKError err = engine.AFT_FSDK_FaceFeatureDetect(data, width, height, AFT_FSDKEngine.CP_PAF_NV21, result);
+		Log.e(TAG, "AFT_FSDK_FaceFeatureDetect =" + err.getCode());
+		Log.e(TAG, "Face=" + result.size());
+		for (AFT_FSDKFace face : result) {
+			Log.e(TAG, "Face:" + face.toString());
+		}
+		if (mImageNV21 == null) {
+			if (!result.isEmpty()) {
+				mAFT_FSDKFace = result.get(0).clone();
+				mImageNV21 = data.clone();
+			} else {
+				mHandler.postDelayed(hide, 3000);
+			}
+		}
+		//copy rects
+		Rect[] rects = new Rect[result.size()];
+		for (int i = 0; i < result.size(); i++) {
+			rects[i] = new Rect(result.get(i).getRect());
+		}
+		//clear result.
+		result.clear();
+		//return the rects for render.
+		return rects;
+	}
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {

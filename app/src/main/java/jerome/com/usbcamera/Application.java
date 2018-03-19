@@ -33,6 +33,8 @@ public class Application extends android.app.Application {
 
         MyCrashHandler myCrashHandler = MyCrashHandler.getInstance();
         myCrashHandler.init(getApplicationContext());
+
+        LogCatHelper.getInstance(getApplicationContext(), "").start();
 	}
 
 	public void setCaptureImage(Uri uri) {
