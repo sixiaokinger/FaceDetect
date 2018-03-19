@@ -21,6 +21,8 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+
 public class MainActivity extends Activity implements OnClickListener {
 	private final String TAG = this.getClass().toString();
 
@@ -249,9 +251,13 @@ public class MainActivity extends Activity implements OnClickListener {
 	 * @param mBitmap
 	 */
 	private void startRegister(Bitmap mBitmap, String file) {
+	    if (file == null || file.isEmpty()) return;
 		Intent it = new Intent(MainActivity.this, RegisterActivity.class);
 		Bundle bundle = new Bundle();
-		bundle.putString("imagePath", file);
+        Bitmap bmp = Application.decodeImage(file);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        bundle.putByteArray("image", baos.toByteArray());
 		it.putExtras(bundle);
 		startActivityForResult(it, REQUEST_CODE_OP);
 	}
