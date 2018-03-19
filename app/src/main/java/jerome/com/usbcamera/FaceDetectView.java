@@ -112,7 +112,6 @@ public class FaceDetectView extends SurfaceView implements SurfaceHolder.Callbac
                 ImageProc.IMG_HEIGHT,
                 Bitmap.Config.ARGB_8888);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Rect[] rects = null;
         Paint paint = new Paint();
         paint.setColor(Color.GREEN);
@@ -129,10 +128,8 @@ public class FaceDetectView extends SurfaceView implements SurfaceHolder.Callbac
             }
 
             if (onCameraListener != null) {
-                baos.reset();
-                bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                rects = (Rect[])onCameraListener.onPreview(baos.toByteArray(), ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT);
-                Log.e(TAG, "run: rects length" + rects.length);
+                rects = (Rect[])onCameraListener.onPreview(mUsbCameraNative.nativePixelToByteArray(), ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT);
+                Log.d(TAG, "run: rects length" + rects.length);
             }
 
             Canvas canvas = getHolder().lockCanvas();

@@ -77,6 +77,7 @@ typedef struct camera {
 	int frameBytesUsed;
 	unsigned char *yuv422Buffer;
 	int *rgbBuffer;
+	unsigned char *nv21Buffer;
 	int isRecording;
 	int recordEncodeStatus;
 	int pixelFormat;
@@ -86,6 +87,7 @@ int prepareCameraWithBase(int width, int height, int pixelFormat);
 int processCamera();
 void stopCamera(JNIEnv *env);
 void pixelToBmp( JNIEnv* env, jobject bitmap);
+jbyteArray pixelToByteArray(JNIEnv* env);
 int startRecord(JNIEnv *env, jobject thiz);
 int stopRecord(JNIEnv *env);
 

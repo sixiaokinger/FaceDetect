@@ -27,6 +27,10 @@ static void native_pixel_to_bmp(JNIEnv *env, jobject thiz, jobject bmp){
 	pixelToBmp(env, bmp);
 }
 
+static jbyteArray native_pixel_to_byte_array(JNIEnv *env, jobject thiz) {
+    return pixelToByteArray(env);
+}
+
 static jint native_start_record(JNIEnv *env, jobject thiz){
 	return startRecord(env, thiz);
 }
@@ -36,12 +40,13 @@ static jint native_stop_record(JNIEnv *env, jobject thiz){
 }
 
 static JNINativeMethod gMethods[] = {
-	{"nativePrepareCamera",	"(III)I",	(void *)native_prepare_camera},
-	{"nativeProcessCamera",	"()I",	(void *)native_process_camera},
-	{"nativeStopCamera",	"()I",	(void *)native_stop_camera},
-	{"nativePixelToBmp",	"(Landroid/graphics/Bitmap;)V",	(void *)native_pixel_to_bmp},
-	{"nativeStartRecord",	"()I",	(void *)native_start_record},
-	{"nativeStopRecord",	"()I",	(void *)native_stop_record},
+	{"nativePrepareCamera",	    "(III)I",	(void *)native_prepare_camera},
+	{"nativeProcessCamera",	    "()I",	(void *)native_process_camera},
+	{"nativeStopCamera",	    "()I",	(void *)native_stop_camera},
+	{"nativePixelToBmp",	    "(Landroid/graphics/Bitmap;)V",	(void *)native_pixel_to_bmp},
+	{"nativePixelToByteArray",  "()[B", (void *)native_pixel_to_byte_array},
+	{"nativeStartRecord",	    "()I",	(void *)native_start_record},
+	{"nativeStopRecord",	    "()I",	(void *)native_stop_record},
 };
 
 static jint registerNativeMethods(JNIEnv* env, const char* className, JNINativeMethod* methods, int numMethods) {

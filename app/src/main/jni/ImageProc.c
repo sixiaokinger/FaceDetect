@@ -345,10 +345,10 @@ static int readFrame(UsbCamera *cam) {
 	}
 	cam->frameBytesUsed = bufferSize;
 
-	if (cam->isRecording && VIDEO_ENCODE_IDLE == cam->recordEncodeStatus) {
+	//if (cam->isRecording && VIDEO_ENCODE_IDLE == cam->recordEncodeStatus) {
 		memcpy(cam->yuv422Buffer, cam->framePreviewBuffer, bufferSize);
 		cam->recordEncodeStatus = VIDEO_ENCODE_BUSY;
-	}
+	//}
 
 	if (-1 == xioctl (cam->fd, VIDIOC_QBUF, &buf)) {
 		return ERROR_VIDIOC_QBUF;
@@ -385,6 +385,7 @@ static int uninitDevice(UsbCamera *cam) {
 	SAFE_FREE_ELEMENT(cam->framePreviewBuffer);
 	SAFE_FREE_ELEMENT(cam->yuv422Buffer);
 	SAFE_FREE_ELEMENT(cam->rgbBuffer);
+	SAFE_FREE_ELEMENT(cam->nv21Buffer);
 	return SUCCESSED;
 }
 
@@ -444,6 +445,16 @@ void pixelToBmp( JNIEnv* env,jobject bitmap){
 	AndroidBitmap_unlockPixels(env, bitmap);
 }
 
+jbyteArray pixelToByteArray(JNIEnv* env){
+	const int Yuv420spSize = pUsbCamera->width * pUsbCamera->height * 3 / 2;
+	unsigned char *yuv420spBuffer = (unsigned char *) calloc(1, Yuv420spSize);
+    yuv422Toyuv420sp(yuv420spBuffer, pUsbCamera->yuv422Buffer, pUsbCamera->width, pUsbCamera->height);
+
+    jbyteArray jarray = (*env)->NewByteArray(env, Yuv420spSize);	
+   	(*env)->SetByteArrayRegion(env, jarray, 0, Yuv420spSize, (jbyte*)yuv420spBuffer);
+   	return jarray;
+}
+
 static int mapCameraPixFormat(int pixelFormat){
 	int format;
 	switch(pixelFormat){
@@ -498,6 +509,7 @@ int prepareCameraWithBase(int width, int height, int pixFormat){
 		pCamera->framePreviewBuffer = (unsigned char *) calloc(1, pCamera->width * pCamera->height * 2);
 		pCamera->yuv422Buffer = (unsigned char *) calloc(1, pCamera->width * pCamera->height * 2);
 		pCamera->rgbBuffer = (int *)malloc(sizeof(int) * (pCamera->width * pCamera->height));
+		pCamera->nv21Buffer = (unsigned char *)malloc(1 * pCamera->width * pCamera->height * 3 / 2);
 	}
 
 #ifdef __DEBUG_ENCODE__

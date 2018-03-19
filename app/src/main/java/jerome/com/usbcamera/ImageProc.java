@@ -34,6 +34,7 @@ public class ImageProc {
     public native int nativeProcessCamera();
     public native int nativeStopCamera();
     public native void nativePixelToBmp(Bitmap bitmap);
+    public native byte[] nativePixelToByteArray();
     public native int nativeStartRecord();
     public native int nativeStopRecord();
 

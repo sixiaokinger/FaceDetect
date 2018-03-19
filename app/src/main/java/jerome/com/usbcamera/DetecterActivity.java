@@ -55,7 +55,6 @@ import java.util.List;
 public class DetecterActivity extends Activity implements View.OnTouchListener, Camera.AutoFocusCallback, View.OnClickListener, FaceDetectView.OnCameraListener {
 	private final String TAG = this.getClass().getSimpleName();
 
-	private int mWidth, mHeight, mFormat;
 	private CameraSurfaceView mSurfaceView;
 	private FaceDetectView mFaceDetectView;
 	private Camera mCamera;
@@ -137,16 +136,16 @@ public class DetecterActivity extends Activity implements View.OnTouchListener, 
 				face2.clear();
 				face1.add(new ASAE_FSDKFace(mAFT_FSDKFace.getRect(), mAFT_FSDKFace.getDegree()));
 				face2.add(new ASGE_FSDKFace(mAFT_FSDKFace.getRect(), mAFT_FSDKFace.getDegree()));
-				ASAE_FSDKError error1 = mAgeEngine.ASAE_FSDK_AgeEstimation_Image(mImageNV21, mWidth, mHeight, AFT_FSDKEngine.CP_PAF_NV21, face1, ages);
-				ASGE_FSDKError error2 = mGenderEngine.ASGE_FSDK_GenderEstimation_Image(mImageNV21, mWidth, mHeight, AFT_FSDKEngine.CP_PAF_NV21, face2, genders);
-				Log.d(TAG, "ASAE_FSDK_AgeEstimation_Image:" + error1.getCode() + ",ASGE_FSDK_GenderEstimation_Image:" + error2.getCode());
-				Log.d(TAG, "age:" + ages.get(0).getAge() + ",gender:" + genders.get(0).getGender());
+				ASAE_FSDKError error1 = mAgeEngine.ASAE_FSDK_AgeEstimation_Image(mImageNV21, ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT, AFT_FSDKEngine.CP_PAF_NV21, face1, ages);
+				ASGE_FSDKError error2 = mGenderEngine.ASGE_FSDK_GenderEstimation_Image(mImageNV21, ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT, AFT_FSDKEngine.CP_PAF_NV21, face2, genders);
+				Log.e(TAG, "ASAE_FSDK_AgeEstimation_Image:" + error1.getCode() + ",ASGE_FSDK_GenderEstimation_Image:" + error2.getCode());
+				Log.e(TAG, "age:" + ages.get(0).getAge() + ",gender:" + genders.get(0).getGender());
 				final String age = ages.get(0).getAge() == 0 ? "年龄未知" : ages.get(0).getAge() + "岁";
 				final String gender = genders.get(0).getGender() == -1 ? "性别未知" : (genders.get(0).getGender() == 0 ? "男" : "女");
 				
 				//crop
 				byte[] data = mImageNV21;
-				YuvImage yuv = new YuvImage(data, ImageFormat.NV21, mWidth, mHeight, null);
+				YuvImage yuv = new YuvImage(data, ImageFormat.NV21, ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT, null);
 				ExtByteArrayOutputStream ops = new ExtByteArrayOutputStream();
 				yuv.compressToJpeg(mAFT_FSDKFace.getRect(), 80, ops);
 				final Bitmap bmp = BitmapFactory.decodeByteArray(ops.getByteArray(), 0, ops.getByteArray().length);
@@ -232,9 +231,6 @@ public class DetecterActivity extends Activity implements View.OnTouchListener, 
 //		mCameraID = getIntent().getIntExtra("Camera", 0) == 0 ? Camera.CameraInfo.CAMERA_FACING_BACK : Camera.CameraInfo.CAMERA_FACING_FRONT;
 		mCameraRotate = getIntent().getIntExtra("Camera", 0) == 0 ? 180 : 0;
 		mCameraMirror = getIntent().getIntExtra("Camera", 0) == 0 ? false : true;
-		mWidth = 1280;
-		mHeight = 960;
-		mFormat = ImageFormat.NV21;
 		mHandler = new Handler();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -296,12 +292,11 @@ public class DetecterActivity extends Activity implements View.OnTouchListener, 
 
 	@Override
 	public Object onPreview(byte[] data, int width, int height) {
-        Log.e(TAG, "onPreview: data length " + data.length + " " +width + " " + height);
         AFT_FSDKError err = engine.AFT_FSDK_FaceFeatureDetect(data, width, height, AFT_FSDKEngine.CP_PAF_NV21, result);
-		Log.e(TAG, "AFT_FSDK_FaceFeatureDetect =" + err.getCode());
-		Log.e(TAG, "Face=" + result.size());
+//		Log.e(TAG, "AFT_FSDK_FaceFeatureDetect =" + err.getCode());
+//		Log.e(TAG, "Face=" + result.size());
 		for (AFT_FSDKFace face : result) {
-			Log.e(TAG, "Face:" + face.toString());
+			Log.d(TAG, "Face:" + face.toString());
 		}
 		if (mImageNV21 == null) {
 			if (!result.isEmpty()) {
