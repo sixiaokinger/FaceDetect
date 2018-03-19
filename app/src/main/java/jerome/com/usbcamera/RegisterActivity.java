@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -68,6 +69,8 @@ public class RegisterActivity extends Activity implements SurfaceHolder.Callback
 	private HListView mHListView;
 	private RegisterViewAdapter mRegisterViewAdapter;
 	private AFR_FSDKFace mAFR_FSDKFace;
+
+	private boolean mRegisterSuccessed = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -209,6 +212,8 @@ public class RegisterActivity extends Activity implements SurfaceHolder.Callback
 		});
 		view.start();
 
+        mRegisterSuccessed = false;
+
         Button mBack = (Button) findViewById(R.id.register_back);
         mBack.setOnClickListener(this);
 	}
@@ -260,6 +265,18 @@ public class RegisterActivity extends Activity implements SurfaceHolder.Callback
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mRegisterSuccessed) {
+            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
+
     class UIHandler extends android.os.Handler {
 		@Override
 		public void handleMessage(final Message msg) {
@@ -284,6 +301,7 @@ public class RegisterActivity extends Activity implements SurfaceHolder.Callback
 									String name = mEditText.getText().toString();
                                     ((Application)RegisterActivity.this.getApplicationContext()).saveDrawable(name, face);
 									mRegisterViewAdapter.notifyDataSetChanged();
+                                    mRegisterSuccessed = true;
 									dialog.dismiss();
 								}
 							})

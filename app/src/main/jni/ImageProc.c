@@ -385,7 +385,6 @@ static int uninitDevice(UsbCamera *cam) {
 	SAFE_FREE_ELEMENT(cam->framePreviewBuffer);
 	SAFE_FREE_ELEMENT(cam->yuv422Buffer);
 	SAFE_FREE_ELEMENT(cam->rgbBuffer);
-	SAFE_FREE_ELEMENT(cam->nv21Buffer);
 	return SUCCESSED;
 }
 
@@ -452,6 +451,7 @@ jbyteArray pixelToByteArray(JNIEnv* env){
 
     jbyteArray jarray = (*env)->NewByteArray(env, Yuv420spSize);	
    	(*env)->SetByteArrayRegion(env, jarray, 0, Yuv420spSize, (jbyte*)yuv420spBuffer);
+   	SAFE_FREE_ELEMENT(yuv420spBuffer)
    	return jarray;
 }
 
@@ -509,7 +509,6 @@ int prepareCameraWithBase(int width, int height, int pixFormat){
 		pCamera->framePreviewBuffer = (unsigned char *) calloc(1, pCamera->width * pCamera->height * 2);
 		pCamera->yuv422Buffer = (unsigned char *) calloc(1, pCamera->width * pCamera->height * 2);
 		pCamera->rgbBuffer = (int *)malloc(sizeof(int) * (pCamera->width * pCamera->height));
-		pCamera->nv21Buffer = (unsigned char *)malloc(1 * pCamera->width * pCamera->height * 3 / 2);
 	}
 
 #ifdef __DEBUG_ENCODE__

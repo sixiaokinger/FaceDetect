@@ -77,7 +77,6 @@ typedef struct camera {
 	int frameBytesUsed;
 	unsigned char *yuv422Buffer;
 	int *rgbBuffer;
-	unsigned char *nv21Buffer;
 	int isRecording;
 	int recordEncodeStatus;
 	int pixelFormat;
