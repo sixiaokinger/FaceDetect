@@ -2,6 +2,7 @@ package jerome.com.usbcamera;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,6 +23,7 @@ import android.view.Window;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 public class MainActivity extends Activity implements OnClickListener {
 	private final String TAG = this.getClass().toString();
@@ -29,6 +31,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	private static final int REQUEST_CODE_IMAGE_CAMERA = 1;
 	private static final int REQUEST_CODE_IMAGE_OP = 2;
 	private static final int REQUEST_CODE_OP = 3;
+
+	private boolean mStartGetCertificate = false;
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -53,6 +57,39 @@ public class MainActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
+
+	@Override
+    protected void onResume() {
+	    super.onResume();
+
+	    if (mStartGetCertificate) {
+//            Intent getImageByalbum = new Intent(Intent.ACTION_GET_CONTENT);
+//            getImageByalbum.addCategory(Intent.CATEGORY_OPENABLE);
+//            getImageByalbum.setType("image/jpeg");
+//            startActivityForResult(getImageByalbum, REQUEST_CODE_IMAGE_OP);
+            File root = new File(Environment.getExternalStorageDirectory() + File.separator + "id_file");
+            final File[] timeDirs = root.listFiles();
+            final File timeDir = timeDirs[getLastModified(timeDirs)];
+            final File[] personDirs = timeDir.listFiles();
+            final File persionDir = personDirs[getLastModified(personDirs)];
+            String fileName = persionDir.getAbsolutePath() + File.separator + persionDir.getName() + ".jpg";
+            startRegister(null, fileName);
+
+            mStartGetCertificate = false;
+        }
+    }
+
+    private int getLastModified(File[] files) {
+	    int index = 0;
+	    long time = 0;
+	    for (int i = 0; i < files.length; i++) {
+	        if (time < files[i].lastModified()) {
+	            index = i;
+	            time = files[i].lastModified();
+            }
+        }
+        return index;
+    }
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -131,12 +168,13 @@ public class MainActivity extends Activity implements OnClickListener {
                                         startActivity(it);
 										break;
 									case 0:
-										Intent getImageByalbum = new Intent(Intent.ACTION_GET_CONTENT);
-										getImageByalbum.addCategory(Intent.CATEGORY_OPENABLE);
-										getImageByalbum.setType("image/jpeg");
-										startActivityForResult(getImageByalbum, REQUEST_CODE_IMAGE_OP);
+                                        mStartGetCertificate = true;
+                                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                                        ComponentName componentName = new ComponentName("com.techshino.eyekey.identityauth", "com.techshino.eyekey.identityauth.MainActivity");
+                                        intent.setComponent(componentName);
+                                        startActivity(intent);
 										break;
-									default:;
+									default:
 								}
 							}
 						})
