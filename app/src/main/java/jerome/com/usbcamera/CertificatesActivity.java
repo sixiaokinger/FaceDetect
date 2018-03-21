@@ -45,6 +45,7 @@ public class CertificatesActivity extends AppCompatActivity implements FaceDetec
     private final static int MSG_CODE = 0x1000;
     private final static int MSG_EVENT_REG = 0x1001;
     private final static int MSG_EVENT_MATCH = 0x1002;
+    private final static int MSG_EVENT_START = 0x1003;
     private UIHandler mUIHandler = new UIHandler();
 
     private ImageButton mCaptureButton;
@@ -145,6 +146,10 @@ public class CertificatesActivity extends AppCompatActivity implements FaceDetec
                     reg.arg1 = MSG_EVENT_REG;
                     reg.obj = face_bitmap;
                     mUIHandler.sendMessage(reg);
+                    Message msg = Message.obtain();
+                    msg.what = MSG_CODE;
+                    msg.arg1 = MSG_EVENT_START;
+                    mUIHandler.sendMessageDelayed(msg, 3000);
                 }
             }
         });
@@ -205,10 +210,11 @@ public class CertificatesActivity extends AppCompatActivity implements FaceDetec
                     mImageView.setImageBitmap(face);
                     mImageView.setVisibility(View.VISIBLE);
                     mCaptureButton.setVisibility(View.INVISIBLE);
+                } else if (msg.arg1 == MSG_EVENT_START) {
                     mCatchCertificate = true;
                     mFRAbsLoop = new FRAbsLoop();
                     mFRAbsLoop.start();
-                } else if(msg.arg1 == MSG_EVENT_MATCH) {
+                } else if (msg.arg1 == MSG_EVENT_MATCH) {
                     mTextView.setVisibility(View.VISIBLE);
                     mFRAbsLoop.shutdown();
                     Log.i(TAG, "handleMessage: MSG_EVENT_MATCH");
