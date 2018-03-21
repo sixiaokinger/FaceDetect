@@ -89,11 +89,27 @@ public class MainActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		switch (paramView.getId()) {
 			case R.id.button2:
-				if( ((Application)getApplicationContext()).mFaceDB.mRegister.isEmpty() ) {
-					Toast.makeText(this, "没有注册人脸，请先注册！", Toast.LENGTH_SHORT).show();
-				} else {
-				    startDetector();
-				}
+			    new AlertDialog.Builder(this)
+                        .setTitle("请选择检测方式")
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .setItems(new String[]{"人证比对", "数据库匹配"}, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case 0:
+                                        startCertificate();
+                                        break;
+                                    case 1:
+                                        if( ((Application)getApplicationContext()).mFaceDB.mRegister.isEmpty() ) {
+                                            Toast.makeText(MainActivity.this, "没有注册人脸，请先注册！", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            startDetector();
+                                        }
+                                        break;
+                                }
+                            }
+                        }).show();
+
 				break;
 			case R.id.button1:
 				new AlertDialog.Builder(this)
@@ -266,6 +282,11 @@ public class MainActivity extends Activity implements OnClickListener {
 		Intent it = new Intent(MainActivity.this, DetecterActivity.class);
 		startActivityForResult(it, REQUEST_CODE_OP);
 	}
+
+	private void startCertificate() {
+	    Intent it = new Intent(MainActivity.this, CertificatesActivity.class);
+	    startActivity(it);
+    }
 
 }
 

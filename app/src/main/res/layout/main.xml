@@ -5,7 +5,7 @@
     android:layout_height="fill_parent"
 	android:background="#FF000000"
     >
-    <jerome.com.usbcamera.CameraView
+    <jerome.com.usbcamera.FaceDetectView
 		android:id="@+id/camera_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

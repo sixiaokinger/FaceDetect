@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.InputFilter;
@@ -374,8 +375,10 @@ public class RegisterActivity extends Activity implements SurfaceHolder.Callback
 
 			if (!((Application)mContext.getApplicationContext()).mFaceDB.mRegister.isEmpty()) {
 				FaceDB.FaceRegist face = ((Application) mContext.getApplicationContext()).mFaceDB.mRegister.get(position);
+                Drawable drawable = ((Application)RegisterActivity.this.getApplicationContext()).getDrawableByKey(face.mName);
+                drawable.setBounds(0, 0, 80, 80);
 				holder.tv.setText(face.mName);
-				//holder.siv.setImageResource(R.mipmap.ic_launcher);
+				holder.siv.setImageDrawable(drawable);
 				convertView.setWillNotDraw(false);
 			}
 

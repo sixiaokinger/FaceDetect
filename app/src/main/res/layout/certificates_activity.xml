@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <jerome.com.usbcamera.FaceDetectView
+        android:id="@+id/faceDetectView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <ImageButton
+        android:id="@+id/capture_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="40px"
+        android:background="@null"
+        android:src="@drawable/btn_photo" />
+
+    <ImageView
+        android:id="@+id/img_certificates"
+        android:layout_width="160px"
+        android:layout_height="160px"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="36px"
+        android:layout_marginTop="33px"
+        app:srcCompat="@drawable/nobody" />
+
+    <TextView
+        android:id="@+id/text_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/capture_btn"
+        android:layout_alignStart="@+id/img_certificates"
+        android:outlineProvider="background"
+        android:text="匹配成功"
+        android:textColor="@android:color/white"
+        android:textSize="25sp"
+        android:textAlignment="center"/>
+</RelativeLayout>
