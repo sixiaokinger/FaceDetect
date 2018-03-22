@@ -142,8 +142,7 @@ public class DetecterActivity extends Activity implements View.OnTouchListener, 
 				Log.e(TAG, "age:" + ages.get(0).getAge() + ",gender:" + genders.get(0).getGender());
 				final String age = ages.get(0).getAge() == 0 ? "年龄未知" : ages.get(0).getAge() + "岁";
 				final String gender = genders.get(0).getGender() == -1 ? "性别未知" : (genders.get(0).getGender() == 0 ? "男" : "女");
-
-				test
+				
 				//crop
 				byte[] data = mImageNV21;
 				YuvImage yuv = new YuvImage(data, ImageFormat.NV21, ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT, null);
