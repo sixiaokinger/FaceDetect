@@ -36,4 +36,14 @@
         android:layout_alignStart="@+id/img_certificate"
         android:layout_marginBottom="30px"
         android:src="@drawable/btn_shutter_photo_pressed" />
+
+    <TextView
+        android:id="@+id/text_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/btn_register"
+        android:layout_alignEnd="@+id/img_matched"
+        android:textAlignment="textEnd"
+        android:textColor="@android:color/white"
+        android:textSize="15sp" />
 </RelativeLayout>
