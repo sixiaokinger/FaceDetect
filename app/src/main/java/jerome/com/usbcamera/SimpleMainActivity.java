@@ -94,7 +94,6 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnCam
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
 
         this.setContentView(R.layout.simple_main);
@@ -348,7 +347,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnCam
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_register) {
-            //todo: enter register activity
+            //todo:register
         }
     }
 
@@ -448,13 +447,15 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnCam
                             {0x00, (byte) 0x84, 0x00, 0x00, 0x08},
                             {0x00, 0x36, 0x00, 0x00, 0x08},
                     };
+                    int count = 0;
                     debugInfo.append("寻到ISO14443-B卡->UID:(身份证发送0036000008指令获取UID)\r\n");
                     for (byte[] aBytes : sfzCmdBytes) {
                         try {
                             byte returnBytes[] = iso14443bCard.transceive(aBytes);
-
-                            debugInfo.append("读取卡片信息 " + StringTool.byteHexToSting(returnBytes) + "\r\n");
-                            mUIHandler.sendEmptyMessage(MSG_REFREASH_TEXT);
+                            if (count > 0) {
+                                onCardInfoGatch(StringTool.byteHexToSting(returnBytes));
+                            }
+                            count++;
                         } catch (CardNoResponseException e) {
                             e.printStackTrace();
                             return false;
@@ -464,6 +465,11 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnCam
                 break;
         }
         return false;
+    }
+
+    private void onCardInfoGatch(String code) {
+        debugInfo.append("读取卡片信息 " + code + "\r\n");
+        mUIHandler.sendEmptyMessage(MSG_REFREASH_TEXT);
     }
 
     class UIHandler extends Handler {

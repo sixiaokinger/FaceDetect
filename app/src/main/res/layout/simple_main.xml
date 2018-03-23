@@ -5,36 +5,100 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <jerome.com.usbcamera.FaceDetectView
         android:id="@+id/detect_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <ImageView
-        android:id="@+id/img_certificate"
-        android:layout_width="336px"
-        android:layout_height="216px"
-        android:layout_marginLeft="30px"
-        android:layout_marginTop="30px"
-        android:scaleType="fitXY"
-        android:src="@drawable/nobody" />
+        android:id="@+id/img_bg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        android:visibility="visible"
+        app:srcCompat="@drawable/ui_cover" />
 
-    <ImageView
-        android:id="@+id/img_matched"
-        android:layout_width="200px"
-        android:layout_height="200px"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/img_certificate"
-        android:layout_marginEnd="30px"
-        android:src="@drawable/nobody" />
+    <RelativeLayout
+        android:id="@+id/layout_face"
+        android:layout_width="225px"
+        android:layout_height="185px"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="48px"
+        android:layout_marginLeft="240px">
+
+        <ImageView
+            android:id="@+id/image_face"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="false"
+            android:layout_marginTop="30px"
+            app:srcCompat="@drawable/nobody" />
+
+        <TextView
+            android:id="@+id/text_face"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="12px"
+            android:text="请正脸对准摄像头"
+            android:textSize="13sp" />
+
+        <ImageView
+            android:id="@+id/img_matched"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/nobody"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_card"
+        android:layout_width="392px"
+        android:layout_height="185px"
+        android:layout_alignTop="@+id/layout_face"
+        android:layout_marginStart="145dp"
+        android:layout_toEndOf="@+id/layout_face">
+
+        <ImageView
+            android:id="@+id/image_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="false"
+            android:layout_marginTop="30px"
+            app:srcCompat="@drawable/ui_card" />
+
+        <TextView
+            android:id="@+id/text_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="12px"
+            android:text="请放好身份证件"
+            android:textSize="13sp" />
+
+        <ImageView
+            android:id="@+id/img_certificate"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/nobody"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
 
     <ImageButton
         android:id="@+id/btn_register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/img_certificate"
         android:layout_marginBottom="30px"
+        android:layout_marginLeft="30px"
         android:src="@drawable/btn_shutter_photo_pressed" />
 
     <TextView
@@ -42,8 +106,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/btn_register"
-        android:layout_alignEnd="@+id/img_matched"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentTop="false"
         android:textAlignment="textEnd"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:textSize="15sp" />
+
 </RelativeLayout>
