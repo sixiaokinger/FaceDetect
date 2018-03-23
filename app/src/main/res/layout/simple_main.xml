@@ -11,21 +11,31 @@
         android:layout_height="match_parent" />
 
     <ImageView
-        android:id="@+id/img_certificate"
-        android:layout_width="336px"
-        android:layout_height="216px"
-        android:layout_marginLeft="30px"
-        android:layout_marginTop="30px"
-        android:scaleType="fitXY"
-        android:src="@drawable/nobody" />
+        android:id="@+id/bg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ui" />
 
     <ImageView
         android:id="@+id/img_matched"
         android:layout_width="200px"
-        android:layout_height="200px"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/img_certificate"
-        android:layout_marginEnd="30px"
+        android:layout_height="160px"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="83px"
+        android:layout_marginLeft="282px"
+        android:src="@drawable/nobody" />
+
+    <ImageView
+        android:id="@+id/img_certificate"
+        android:layout_width="350px"
+        android:layout_height="160px"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="83px"
+        android:layout_marginRight="272px"
+        android:scaleType="fitXY"
         android:src="@drawable/nobody" />
 
     <ImageButton
@@ -33,17 +43,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/img_certificate"
+        android:layout_alignParentLeft="true"
         android:layout_marginBottom="30px"
+        android:layout_marginLeft="30px"
         android:src="@drawable/btn_shutter_photo_pressed" />
 
     <TextView
         android:id="@+id/text_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/btn_register"
-        android:layout_alignEnd="@+id/img_matched"
         android:textAlignment="textEnd"
         android:textColor="@android:color/white"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
         android:textSize="15sp" />
+
 </RelativeLayout>
