@@ -58,4 +58,20 @@
         android:layout_alignParentRight="true"
         android:textSize="15sp" />
 
+    <ImageButton
+        android:id="@+id/btn_reg_face"
+        android:layout_width="200px"
+        android:layout_height="200px"
+        android:layout_alignStart="@+id/img_matched"
+        android:layout_alignTop="@+id/img_matched"
+        android:background="@null" />
+
+    <ImageButton
+        android:id="@+id/btn_reg_card"
+        android:layout_width="350px"
+        android:layout_height="200px"
+        android:layout_alignStart="@+id/img_certificate"
+        android:layout_alignTop="@+id/img_certificate"
+        android:background="@null" />
+
 </RelativeLayout>
