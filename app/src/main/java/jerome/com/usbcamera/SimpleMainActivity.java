@@ -195,7 +195,10 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
             Uri mPath = data.getData();
             String file = getPath(mPath);
             Bitmap bmp = Application.decodeImage(file);
-            mImgCertificate.setImageBitmap(bmp);
+
+            Bitmap ret = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight() / 2);
+
+            mImgCertificate.setImageBitmap(ret);
             mImgCertificate.setVisibility(View.VISIBLE);
         }
     }
@@ -507,6 +510,10 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
         switch (v.getId()) {
             case R.id.btn_register:
                 // TODO: 2018/3/23 save info
+                if (mNearestBle == null) {
+                    SearchNearestBleDevice();
+                    return;
+                }
                 break;
             case R.id.btn_reg_face:
                 mUsbCamera.capturePicture();
