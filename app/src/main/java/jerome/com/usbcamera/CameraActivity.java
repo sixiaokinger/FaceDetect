@@ -17,9 +17,11 @@ import com.arcsoft.facetracking.AFT_FSDKFace;
 import com.arcsoft.facetracking.AFT_FSDKVersion;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import jerome.com.usbcamera.utils.FaceDB;
+import jerome.com.usbcamera.utils.FaceDetectView;
 
 public class CameraActivity extends AppCompatActivity implements View.OnClickListener, FaceDetectView.OnPictureSaved, FaceDetectView.OnCameraListener {
 

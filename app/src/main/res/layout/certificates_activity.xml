@@ -5,7 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <jerome.com.usbcamera.FaceDetectView
+    <jerome.com.usbcamera.utils.FaceDetectView
         android:id="@+id/faceDetectView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />

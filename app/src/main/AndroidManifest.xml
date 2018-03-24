@@ -69,7 +69,7 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
 
-        <service android:name="jerome.com.bleNfc.BleNfcDeviceService" />
+        <service android:name=".bleNfc.BleNfcDeviceService" />
     </application>
 
 </manifest>

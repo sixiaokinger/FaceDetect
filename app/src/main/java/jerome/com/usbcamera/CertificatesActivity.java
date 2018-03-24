@@ -30,10 +30,12 @@ import com.arcsoft.facetracking.AFT_FSDKVersion;
 import com.guo.android_extend.image.ImageConverter;
 import com.guo.android_extend.java.AbsLoop;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import jerome.com.usbcamera.utils.FaceDB;
+import jerome.com.usbcamera.utils.FaceDetectView;
+import jerome.com.usbcamera.utils.ImageProc;
 
 /**
  * Created by yanbo on 2018/3/20.

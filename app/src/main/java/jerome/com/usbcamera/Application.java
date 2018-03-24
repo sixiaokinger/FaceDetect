@@ -1,11 +1,9 @@
 package jerome.com.usbcamera;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -15,6 +13,10 @@ import android.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+
+import jerome.com.usbcamera.utils.FaceDB;
+import jerome.com.usbcamera.utils.LogCatHelper;
+import jerome.com.usbcamera.utils.MyCrashHandler;
 
 /**
  * Created by gqj3375 on 2017/4/28.

@@ -51,16 +51,19 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import jerome.com.bleNfc.BleManager.BleManager;
-import jerome.com.bleNfc.BleManager.ScannerCallback;
-import jerome.com.bleNfc.BleNfcDeviceService;
-import jerome.com.bleNfc.DeviceManager.BleNfcDevice;
-import jerome.com.bleNfc.DeviceManager.ComByteManager;
-import jerome.com.bleNfc.DeviceManager.DeviceManager;
-import jerome.com.bleNfc.DeviceManager.DeviceManagerCallback;
-import jerome.com.bleNfc.Exception.CardNoResponseException;
-import jerome.com.bleNfc.Exception.DeviceNoResponseException;
-import jerome.com.bleNfc.card.Iso14443bCard;
+import jerome.com.usbcamera.bleNfc.BleManager.BleManager;
+import jerome.com.usbcamera.bleNfc.BleManager.ScannerCallback;
+import jerome.com.usbcamera.bleNfc.BleNfcDeviceService;
+import jerome.com.usbcamera.bleNfc.DeviceManager.BleNfcDevice;
+import jerome.com.usbcamera.bleNfc.DeviceManager.ComByteManager;
+import jerome.com.usbcamera.bleNfc.DeviceManager.DeviceManager;
+import jerome.com.usbcamera.bleNfc.DeviceManager.DeviceManagerCallback;
+import jerome.com.usbcamera.bleNfc.Exception.CardNoResponseException;
+import jerome.com.usbcamera.bleNfc.Exception.DeviceNoResponseException;
+import jerome.com.usbcamera.bleNfc.card.Iso14443bCard;
+import jerome.com.usbcamera.utils.FaceDB;
+import jerome.com.usbcamera.utils.FaceDetectView;
+import jerome.com.usbcamera.utils.ImageProc;
 
 /**
  * Created by yanbo on 2018/3/22.
@@ -106,7 +109,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     private String mCardId = null;
 
     private BleNfcDevice mBleNfcDevice;
-    private jerome.com.bleNfc.BleManager.Scanner mScanner;
+    private jerome.com.usbcamera.bleNfc.BleManager.Scanner mScanner;
     private BluetoothDevice mNearestBle = null;
     private Lock mNearestBleLock = new ReentrantLock();
     private int lastRssi = -100;

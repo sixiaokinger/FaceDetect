@@ -8,7 +8,7 @@
 # define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))
 #endif
 
-static const char *gClassName = "jerome/com/usbcamera/ImageProc";
+static const char *gClassName = "jerome/com/usbcamera/utils/ImageProc";
 
 static jint native_prepare_camera(JNIEnv *env, jobject thiz, int width, int height, int pixelFormat){
 	return prepareCameraWithBase(width, height, pixelFormat);

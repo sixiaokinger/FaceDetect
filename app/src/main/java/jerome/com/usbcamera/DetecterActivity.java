@@ -48,6 +48,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jerome.com.usbcamera.utils.FaceDB;
+import jerome.com.usbcamera.utils.FaceDetectView;
+import jerome.com.usbcamera.utils.ImageProc;
+
 /**
  * Created by gqj3375 on 2017/4/28.
  */
