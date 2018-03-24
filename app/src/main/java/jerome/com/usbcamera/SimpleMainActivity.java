@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
@@ -79,6 +80,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     private final static int MSG_EVENT_REG = 0x1001;
     private final static int MSG_EVENT_MATCH = 0x1002;
     private final static int MSG_EVENT_START = 0x1003;
+    private final static int MSG_EVENT_CATCH_CARD = 0x1004;
     private final static int MSG_NFC_CONNECTED = 0x2000;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final int REQUEST_CODE_IMAGE_OP = 2;
@@ -90,11 +92,14 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     private FaceDetectView mUsbCamera;
     private ImageView mImgCertificate;
     private ImageView mImgMatched;
+    private int mGMCount = 0;
+    private boolean mIsGM = false;
 
     private ImageButton mBtnRegister;
     private ImageButton mBtnRegFace;
     private ImageButton mBtnRegCard;
     private TextView mTextInfo;
+    private ImageButton mBtnGM;
     StringBuffer debugInfo = new StringBuffer();
 
     private AFT_FSDKVersion tVersion = new AFT_FSDKVersion();
@@ -135,15 +140,19 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
 
         mBtnRegister = (ImageButton) findViewById(R.id.btn_register);
         mBtnRegister.setOnClickListener(this);
-        mBtnRegister.setVisibility(View.VISIBLE);
+        mBtnRegister.setVisibility(View.INVISIBLE);
         mBtnRegFace = (ImageButton) findViewById(R.id.btn_reg_face);
         mBtnRegFace.setOnClickListener(this);
-        mBtnRegFace.setVisibility(View.VISIBLE);
+        mBtnRegFace.setVisibility(View.INVISIBLE);
         mBtnRegCard = (ImageButton) findViewById(R.id.btn_reg_card);
         mBtnRegCard.setOnClickListener(this);
-        mBtnRegCard.setVisibility(View.VISIBLE);
-
+        mBtnRegCard.setVisibility(View.INVISIBLE);
         mTextInfo = (TextView) findViewById(R.id.text_info);
+        mTextInfo.setVisibility(View.INVISIBLE);
+
+        mBtnGM = (ImageButton) findViewById(R.id.btn_gm);
+        mBtnGM.setOnClickListener(this);
+        mGMCount = 0;
 
         AFT_FSDKError tError = tEngine.AFT_FSDK_InitialFaceEngine(FaceDB.appid, FaceDB.ft_key, AFT_FSDKEngine.AFT_OPF_0_HIGHER_EXT, 16, 5);
         Log.d(TAG, "onCreate: AFT_FSDK_InitialFaceEngine = " + tError.getCode());
@@ -535,6 +544,16 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                 getImageByalbum.setType("image/jpeg");
                 startActivityForResult(getImageByalbum, REQUEST_CODE_IMAGE_OP);
                 break;
+            case R.id.btn_gm:
+                if (mGMCount++ > 4) {
+                    mBtnRegister.setVisibility(View.VISIBLE);
+                    mBtnRegFace.setVisibility(View.VISIBLE);
+                    mBtnRegCard.setVisibility(View.VISIBLE);
+                    mTextInfo.setVisibility(View.VISIBLE);
+                    mIsGM = true;
+                    mGMCount = 0;
+                }
+                break;
         }
     }
 
@@ -662,14 +681,14 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
         mCardId = uid;
         mGetCertificate = true;
 
-//        SimpleStorage.FaceRegister data = mData.getDataByUid(uid);
-//        BitmapDrawable bd = (BitmapDrawable)data.card;
-//        Message reg = Message.obtain();
-//        reg.what = MSG_CODE;
-//        reg.arg1 = MSG_EVENT_REG;
-//        reg.obj = bd.getBitmap();
-//        mUIHandler.sendMessage(reg);
-//
+        SimpleStorage.FaceRegister data = mData.getDataByUid(uid);
+        BitmapDrawable bd = (BitmapDrawable)data.card;
+        Message reg = Message.obtain();
+        reg.what = MSG_CODE;
+        reg.arg1 = MSG_EVENT_CATCH_CARD;
+        reg.obj = bd.getBitmap();
+        mUIHandler.sendMessage(reg);
+
 //        debugInfo.delete(0, debugInfo.length());
 //        debugInfo.append(data.name + "\r\n" + data.uid + "\r\n");
 //        mUIHandler.sendEmptyMessage(MSG_REFREASH_TEXT);
@@ -754,6 +773,10 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                 } else if (msg.arg1 == MSG_EVENT_MATCH) {
                     mFRAbsLoop.shutdown();
                     Log.i(TAG, "handleMessage: MSG_EVENT_MATCH");
+                } else if (msg.arg1 == MSG_EVENT_CATCH_CARD) {
+                    final Bitmap card = (Bitmap) msg.obj;
+                    mImgCertificate.setImageBitmap(card);
+                    mImgCertificate.setVisibility(View.VISIBLE);
                 }
             }
             else if (msg.what == MSG_NFC_CONNECTED) {
