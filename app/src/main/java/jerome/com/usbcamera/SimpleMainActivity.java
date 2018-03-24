@@ -193,6 +193,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
             String file = getPath(mPath);
             Bitmap bmp = Application.decodeImage(file);
             mImgCertificate.setImageBitmap(bmp);
+            mImgCertificate.setVisibility(View.VISIBLE);
         }
     }
 
@@ -549,7 +550,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
 
                         int searchCnt = 0;
                         while ((mNearestBle == null)
-                                && (searchCnt < 1000)
+                                && (searchCnt < 10000)
                                 && (mScanner.isScanning())
                                 && (mBleNfcDevice.isConnection() == BleManager.STATE_DISCONNECTED)) {
                             searchCnt++;
