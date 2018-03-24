@@ -657,8 +657,24 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
         debugInfo.append("读取卡片信息 " + uid + "\r\n");
         mUIHandler.sendEmptyMessage(MSG_REFREASH_TEXT);
 
+        Log.d(TAG, "onCardInfoCatch: uid " + uid);
+
         mCardId = uid;
         mGetCertificate = true;
+
+//        SimpleStorage.FaceRegister data = mData.getDataByUid(uid);
+//        BitmapDrawable bd = (BitmapDrawable)data.card;
+//        Message reg = Message.obtain();
+//        reg.what = MSG_CODE;
+//        reg.arg1 = MSG_EVENT_REG;
+//        reg.obj = bd.getBitmap();
+//        mUIHandler.sendMessage(reg);
+//
+//        debugInfo.delete(0, debugInfo.length());
+//        debugInfo.append(data.name + "\r\n" + data.uid + "\r\n");
+//        mUIHandler.sendEmptyMessage(MSG_REFREASH_TEXT);
+
+
     }
 
     @Override
@@ -683,25 +699,25 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                 AFD_FSDKVersion dVersion = new AFD_FSDKVersion();
                 List<AFD_FSDKFace> dFaces = new ArrayList<AFD_FSDKFace>();
                 AFD_FSDKError dError = dEngine.AFD_FSDK_InitialFaceEngine(FaceDB.appid, FaceDB.fd_key, AFD_FSDKEngine.AFD_OPF_0_HIGHER_EXT, 16, 5);
-                Log.e(TAG, "AFD_FSDK_InitialFaceEngine = " + dError.getCode());
+                Log.d(TAG, "AFD_FSDK_InitialFaceEngine = " + dError.getCode());
                 dError = dEngine.AFD_FSDK_GetVersion(dVersion);
-                Log.e(TAG, "AFD_FSDK_GetVersion = " + dError.getCode());
+                Log.d(TAG, "AFD_FSDK_GetVersion = " + dError.getCode());
                 dError = dEngine.AFD_FSDK_StillImageFaceDetection(data, mBitmap.getWidth(), mBitmap.getHeight(), AFD_FSDKEngine.CP_PAF_NV21, dFaces);
-                Log.e(TAG, "AFD_FSDK_StillImageFaceDetection = " + dError.getCode() + "<" + dFaces.size());
+                Log.d(TAG, "AFD_FSDK_StillImageFaceDetection = " + dError.getCode() + "<" + dFaces.size());
 
                 if (!dFaces.isEmpty()) {
                     AFR_FSDKVersion rVersion = new AFR_FSDKVersion();
                     AFR_FSDKEngine rEngine = new AFR_FSDKEngine();
                     AFR_FSDKError rError = rEngine.AFR_FSDK_InitialEngine(FaceDB.appid, FaceDB.fr_key);
                     AFR_FSDKFace result = new AFR_FSDKFace();
-                    Log.e(TAG, "onPreview: AFR_FSDK_InitialEngine = " + rError.getCode());
+                    Log.d(TAG, "onPreview: AFR_FSDK_InitialEngine = " + rError.getCode());
                     rError = rEngine.AFR_FSDK_GetVersion(rVersion);
-                    Log.e(TAG, "onPreview: AFR_FSDK_GetVersion = " + rVersion.getFeatureLevel());
+                    Log.d(TAG, "onPreview: AFR_FSDK_GetVersion = " + rVersion.getFeatureLevel());
                     rError = rEngine.AFR_FSDK_ExtractFRFeature(data, mBitmap.getWidth(), mBitmap.getHeight(), AFR_FSDKEngine.CP_PAF_NV21, new Rect(dFaces.get(0).getRect()), dFaces.get(0).getDegree(), result);
                     rFace = result.clone();
-                    Log.e(TAG, "onPreview: AFR_FSDK_ExtractFRFeature = " + rError.getCode());
+                    Log.d(TAG, "onPreview: AFR_FSDK_ExtractFRFeature = " + rError.getCode());
                     rError = rEngine.AFR_FSDK_UninitialEngine();
-                    Log.e(TAG, "onPreview: AFR_FSDK_UninitialEngine = " + rError.getCode());
+                    Log.d(TAG, "onPreview: AFR_FSDK_UninitialEngine = " + rError.getCode());
 
                     AFD_FSDKFace face = dFaces.get(0);
                     int width = face.getRect().width();
@@ -780,11 +796,11 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
             if (mImageNV21 != null) {
                 long time = System.currentTimeMillis();
                 AFR_FSDKError rError = engine.AFR_FSDK_ExtractFRFeature(mImageNV21, ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT, AFR_FSDKEngine.CP_PAF_NV21, tFace.getRect(), tFace.getDegree(), result);
-                Log.e(TAG, "AFR_FSDK_ExtractFRFeature cost :" + (System.currentTimeMillis() - time) + "ms");
-                Log.e(TAG, "Face=" + result.getFeatureData()[0] + "," + result.getFeatureData()[1] + "," + result.getFeatureData()[2] + "," + rError.getCode());
+                Log.d(TAG, "AFR_FSDK_ExtractFRFeature cost :" + (System.currentTimeMillis() - time) + "ms");
+                Log.d(TAG, "Face=" + result.getFeatureData()[0] + "," + result.getFeatureData()[1] + "," + result.getFeatureData()[2] + "," + rError.getCode());
                 AFR_FSDKMatching score = new AFR_FSDKMatching();
                 rError = engine.AFR_FSDK_FacePairMatching(result, rFace, score);
-                Log.e(TAG, "Score:" + score.getScore() + ", mAFR_FSDKFace=" + (rFace == null) + ", AFR_FSDK_FacePairMatching=" + rError.getCode());
+                Log.d(TAG, "Score:" + score.getScore() + ", mAFR_FSDKFace=" + (rFace == null) + ", AFR_FSDK_FacePairMatching=" + rError.getCode());
                 if (score.getScore() >= 0.5) {
                     Message msg = new Message();
                     msg.what = MSG_CODE;

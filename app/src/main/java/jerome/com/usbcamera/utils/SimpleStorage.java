@@ -73,22 +73,15 @@ public class SimpleStorage {
         one.face = face;
         mRegister.add(one);
 
+        Log.d(TAG, "saveInfo: " + name + uid);
+
         mApplication.saveInfo(name + "_uid", uid);
         BitmapDrawable bd = (BitmapDrawable)card;
         mApplication.saveDrawable(name + "_card", bd.getBitmap());
 
         try {
-            FileOutputStream fs = new FileOutputStream(mDBPath + File.separator + "face.txt");
+            FileOutputStream fs = new FileOutputStream(mDBPath + File.separator + name + ".data");
             ExtOutputStream bos = new ExtOutputStream(fs);
-            bos.writeString(rVersion.toString() + "," + rVersion.getFeatureLevel());
-            for (FaceRegister reg : mRegister) {
-                bos.writeString(reg.name);
-            }
-            bos.close();
-            fs.close();
-
-            fs = new FileOutputStream(mDBPath + File.separator + name + ".data");
-            bos = new ExtOutputStream(fs);
             bos.writeBytes(face.getFeatureData());
             bos.close();
             fs.close();
@@ -104,30 +97,16 @@ public class SimpleStorage {
         if (!mRegister.isEmpty()) {
             return false;
         }
-        try {
-            FileInputStream fs = new FileInputStream(mDBPath + File.separator + "face.txt");
-            ExtInputStream bos = new ExtInputStream(fs);
-            String version_saved = bos.readString();
-            if (version_saved.equals(rVersion.toString() + "," + rVersion.getFeatureLevel())) {
-                mUpdate = true;
-            }
-            if (version_saved != null) {
-                for (String name = bos.readString(); name != null; name = bos.readString()) {
-                    if (new File(mDBPath + "/" + name + ".data").exists()) {
-                        mRegister.add(new FaceRegister());
-                    }
-                }
-            }
-            bos.close();
-            fs.close();
-            return true;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        File dir = new File(mDBPath);
+        File[] files = dir.listFiles();
+        for (File one : files) {
+            Log.d(TAG, "loadInfo: " + one.getName());
+            FaceRegister reg = new FaceRegister();
+            reg.name = one.getName().substring(0, one.getName().length() - 5);
+            mRegister.add(reg);
         }
 
-        return false;
+        return true;
     }
 
     private boolean loadFaces() {
@@ -142,6 +121,7 @@ public class SimpleStorage {
                         if (mUpdate) {}
                         face.face = rFace;
                     }
+                    rFace = new AFR_FSDKFace();
                 } while (bos.readBytes(rFace.getFeatureData()));
                 bos.close();
                 fs.close();
@@ -161,8 +141,17 @@ public class SimpleStorage {
             Log.d(TAG, "loadDetail: " + one.name);
             one.uid = mApplication.getInfo(one.name + "_uid");
             one.card = mApplication.getDrawableByKey(one.name + "_card");
-            Log.d(TAG, "loadDetail: end " + one.name);
+            Log.d(TAG, "loadDetail: end " + one.uid);
         }
         return true;
+    }
+
+    public FaceRegister getDataByUid(String uid) {
+        for (FaceRegister one : mRegister) {
+            if (one.uid.equals(uid)){
+                return one;
+            }
+        }
+        return null;
     }
 }

@@ -87,14 +87,17 @@ public class Application extends android.app.Application {
 	}
 
 	public void saveInfo(String key, String value) {
-	    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Log.d(TAG, "saveInfo: " + key + " " + value);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 	    SharedPreferences.Editor editor = sharedPreferences.edit();
 	    editor.putString(key, value);
 	    editor.commit();
+        Log.d(TAG, "saveInfo: " + sharedPreferences.getString(key, null));
     }
 
     public String getInfo(String key) {
-	    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Log.d(TAG, "getInfo: " + key);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 	    return sharedPreferences.getString(key, null);
     }
 
