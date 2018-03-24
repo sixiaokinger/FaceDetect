@@ -86,6 +86,18 @@ public class Application extends android.app.Application {
 		return null;
 	}
 
+	public void saveInfo(String key, String value) {
+	    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+	    SharedPreferences.Editor editor = sharedPreferences.edit();
+	    editor.putString(key, value);
+	    editor.commit();
+    }
+
+    public String getInfo(String key) {
+	    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+	    return sharedPreferences.getString(key, null);
+    }
+
     public void saveDrawable(String key, Bitmap bmp) {
         SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor=sharedPreferences.edit();

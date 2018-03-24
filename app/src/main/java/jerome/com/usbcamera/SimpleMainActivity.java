@@ -46,6 +46,7 @@ import com.dk.bleNfc.Tool.StringTool;
 import com.guo.android_extend.image.ImageConverter;
 import com.guo.android_extend.java.AbsLoop;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -64,6 +65,7 @@ import jerome.com.usbcamera.bleNfc.card.Iso14443bCard;
 import jerome.com.usbcamera.utils.FaceDB;
 import jerome.com.usbcamera.utils.FaceDetectView;
 import jerome.com.usbcamera.utils.ImageProc;
+import jerome.com.usbcamera.utils.SimpleStorage;
 
 /**
  * Created by yanbo on 2018/3/22.
@@ -83,6 +85,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
 
     private UIHandler mUIHandler = new UIHandler();
     private FRAbsLoop mFRAbsLoop = new FRAbsLoop();
+    private SimpleStorage mData = null;
 
     private FaceDetectView mUsbCamera;
     private ImageView mImgCertificate;
@@ -107,6 +110,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     private boolean mMatched = false;
 
     private String mCardId = null;
+    private String mName = null;
 
     private BleNfcDevice mBleNfcDevice;
     private jerome.com.usbcamera.bleNfc.BleManager.Scanner mScanner;
@@ -148,6 +152,8 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
 
         mMatched = false;
         mGetCertificate = false;
+
+        mData = new SimpleStorage(this.getExternalCacheDir().getPath(), (Application)(this.getApplicationContext()));
 
         // nfc init
 //        if (!gpsIsOpen(SimpleMainActivity.this)) {
@@ -195,6 +201,8 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
             Uri mPath = data.getData();
             String file = getPath(mPath);
             Bitmap bmp = Application.decodeImage(file);
+            File f = new File(file);
+            mName = f.getName();
 
             Bitmap ret = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight() / 2);
 
@@ -514,6 +522,9 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                     SearchNearestBleDevice();
                     return;
                 }
+
+                mData.saveInfo(mName, mCardId, mImgCertificate.getDrawable(), rFace);
+
                 break;
             case R.id.btn_reg_face:
                 mUsbCamera.capturePicture();
