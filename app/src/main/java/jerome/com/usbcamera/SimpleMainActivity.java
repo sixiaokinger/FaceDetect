@@ -11,8 +11,11 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.ImageFormat;
 import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -29,6 +32,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arcsoft.facedetection.AFD_FSDKEngine;
 import com.arcsoft.facedetection.AFD_FSDKError;
@@ -46,6 +50,7 @@ import com.arcsoft.facetracking.AFT_FSDKVersion;
 import com.dk.bleNfc.Tool.StringTool;
 import com.guo.android_extend.image.ImageConverter;
 import com.guo.android_extend.java.AbsLoop;
+import com.guo.android_extend.java.ExtByteArrayOutputStream;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -106,6 +111,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     private AFT_FSDKEngine tEngine = new AFT_FSDKEngine();
     private List<AFT_FSDKFace> tFaces = new ArrayList<AFT_FSDKFace>();
 
+    private SimpleStorage.FaceRegister mMatchingData = null;
     private Bitmap mBitmap = null;
     private byte[] mImageNV21 = null;
     private AFR_FSDKFace rFace = null;
@@ -532,7 +538,12 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                     return;
                 }
 
-                mData.saveInfo(mName, mCardId, mImgCertificate.getDrawable(), rFace);
+                if (!mData.saveInfo(mName, mCardId, mImgCertificate.getDrawable(), rFace)) {
+                    Toast.makeText(SimpleMainActivity.this, "注册信息不全，注册失败", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(SimpleMainActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
+                }
 
                 break;
             case R.id.btn_reg_face:
@@ -681,19 +692,23 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
         mCardId = uid;
         mGetCertificate = true;
 
-        SimpleStorage.FaceRegister data = mData.getDataByUid(uid);
-        BitmapDrawable bd = (BitmapDrawable)data.card;
-        Message reg = Message.obtain();
-        reg.what = MSG_CODE;
-        reg.arg1 = MSG_EVENT_CATCH_CARD;
-        reg.obj = bd.getBitmap();
-        mUIHandler.sendMessage(reg);
+        mMatchingData = mData.getDataByUid(uid);
+        if (mMatchingData != null) {
+            BitmapDrawable bd = (BitmapDrawable)mMatchingData.card;
+            Message reg = Message.obtain();
+            reg.what = MSG_CODE;
+            reg.arg1 = MSG_EVENT_CATCH_CARD;
+            reg.obj = bd.getBitmap();
+            mUIHandler.sendMessage(reg);
 
-//        debugInfo.delete(0, debugInfo.length());
-//        debugInfo.append(data.name + "\r\n" + data.uid + "\r\n");
-//        mUIHandler.sendEmptyMessage(MSG_REFREASH_TEXT);
+            debugInfo.append(mMatchingData.name + "\r\n" + mMatchingData.uid + "\r\n");
+            mUIHandler.sendEmptyMessage(MSG_REFREASH_TEXT);
 
-
+            Message msg = new Message();
+            msg.what = MSG_CODE;
+            msg.arg1 = MSG_EVENT_START;
+            mUIHandler.sendMessage(msg);
+        }
     }
 
     @Override
@@ -768,10 +783,15 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                     mImgMatched.setImageBitmap(face);
                     mImgMatched.setVisibility(View.VISIBLE);
                 } else if (msg.arg1 == MSG_EVENT_START) {
+                    mImgMatched.setVisibility(View.INVISIBLE);
                     mFRAbsLoop = new FRAbsLoop();
                     mFRAbsLoop.start();
                 } else if (msg.arg1 == MSG_EVENT_MATCH) {
                     mFRAbsLoop.shutdown();
+                    Bitmap bmp = (Bitmap) msg.obj;
+                    mImgMatched.setImageBitmap(bmp);
+                    mImgMatched.setVisibility(View.VISIBLE);
+                    Toast.makeText(SimpleMainActivity.this, "验证通过", Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "handleMessage: MSG_EVENT_MATCH");
                 } else if (msg.arg1 == MSG_EVENT_CATCH_CARD) {
                     final Bitmap card = (Bitmap) msg.obj;
@@ -780,6 +800,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                 }
             }
             else if (msg.what == MSG_NFC_CONNECTED) {
+                Toast.makeText(SimpleMainActivity.this, "准备完毕", Toast.LENGTH_SHORT).show();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -816,18 +837,24 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
 
         @Override
         public void loop() {
-            if (mImageNV21 != null) {
+            if (mImageNV21 != null && mMatchingData != null) {
                 long time = System.currentTimeMillis();
                 AFR_FSDKError rError = engine.AFR_FSDK_ExtractFRFeature(mImageNV21, ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT, AFR_FSDKEngine.CP_PAF_NV21, tFace.getRect(), tFace.getDegree(), result);
                 Log.d(TAG, "AFR_FSDK_ExtractFRFeature cost :" + (System.currentTimeMillis() - time) + "ms");
                 Log.d(TAG, "Face=" + result.getFeatureData()[0] + "," + result.getFeatureData()[1] + "," + result.getFeatureData()[2] + "," + rError.getCode());
                 AFR_FSDKMatching score = new AFR_FSDKMatching();
-                rError = engine.AFR_FSDK_FacePairMatching(result, rFace, score);
-                Log.d(TAG, "Score:" + score.getScore() + ", mAFR_FSDKFace=" + (rFace == null) + ", AFR_FSDK_FacePairMatching=" + rError.getCode());
-                if (score.getScore() >= 0.5) {
+                rError = engine.AFR_FSDK_FacePairMatching(result, mMatchingData.face, score);
+                Log.d(TAG, "Score:" + score.getScore() + ", mAFR_FSDKFace=" + (mMatchingData.face == null) + ", AFR_FSDK_FacePairMatching=" + rError.getCode());
+                if (score.getScore() >= 0.5 && mImageNV21 != null) {
+                    byte[] data = mImageNV21;
+                    YuvImage yuv = new YuvImage(data, ImageFormat.NV21, ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT, null);
+                    ExtByteArrayOutputStream ops = new ExtByteArrayOutputStream();
+                    yuv.compressToJpeg(tFace.getRect(), 100, ops);
+                    final Bitmap bmp = BitmapFactory.decodeByteArray(ops.getByteArray(), 0, ops.getByteArray().length);
                     Message msg = new Message();
                     msg.what = MSG_CODE;
                     msg.arg1 = MSG_EVENT_MATCH;
+                    msg.obj = bmp;
                     mUIHandler.sendMessage(msg);
                 }
                 mImageNV21 = null;

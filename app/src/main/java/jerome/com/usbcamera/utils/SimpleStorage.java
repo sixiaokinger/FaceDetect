@@ -66,6 +66,9 @@ public class SimpleStorage {
     }
 
     public boolean saveInfo(String name, String uid, Drawable card, AFR_FSDKFace face) {
+        if (name == null || name.isEmpty() || uid == null ||  uid.isEmpty() || card == null || face == null){
+            return false;
+        }
         FaceRegister one = new FaceRegister();
         one.name = name;
         one.uid = uid;
