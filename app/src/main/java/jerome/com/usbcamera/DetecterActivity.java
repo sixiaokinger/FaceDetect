@@ -295,7 +295,7 @@ public class DetecterActivity extends Activity implements View.OnTouchListener, 
 	}
 
 	@Override
-	public Object onPreview(byte[] data, int width, int height) {
+	public Object onPreview(Bitmap bmp, byte[] data, int width, int height) {
         AFT_FSDKError err = engine.AFT_FSDK_FaceFeatureDetect(data, width, height, AFT_FSDKEngine.CP_PAF_NV21, result);
 //		Log.e(TAG, "AFT_FSDK_FaceFeatureDetect =" + err.getCode());
 //		Log.e(TAG, "Face=" + result.size());

@@ -23,8 +23,9 @@
         android:layout_height="160px"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="83px"
+        android:layout_marginBottom="73px"
         android:layout_marginLeft="282px"
+        android:scaleType="fitXY"
         android:src="@drawable/nobody" />
 
     <ImageView
@@ -33,7 +34,7 @@
         android:layout_height="160px"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="83px"
+        android:layout_marginBottom="73px"
         android:layout_marginRight="272px"
         android:scaleType="fitXY"
         android:src="@drawable/nobody" />

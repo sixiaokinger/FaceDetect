@@ -81,7 +81,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     @Override
-    public Object onPreview(byte[] data, int width, int height) {
+    public Object onPreview(Bitmap bmp, byte[] data, int width, int height) {
         AFT_FSDKError err = engine.AFT_FSDK_FaceFeatureDetect(data, width, height, AFT_FSDKEngine.CP_PAF_NV21, result);
         for (AFT_FSDKFace face : result) {
             Log.d(TAG, "Face:" + face.toString());

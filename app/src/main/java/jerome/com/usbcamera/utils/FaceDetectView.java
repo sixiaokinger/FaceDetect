@@ -124,7 +124,7 @@ public class FaceDetectView extends SurfaceView implements SurfaceHolder.Callbac
             }
 
             if (onCameraListener != null) {
-                rects = (Rect[])onCameraListener.onPreview(mUsbCameraNative.nativePixelToByteArray(), ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT);
+                rects = (Rect[])onCameraListener.onPreview(bmp, mUsbCameraNative.nativePixelToByteArray(), ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT);
                 Log.d(TAG, "run: rects length" + rects.length);
             }
 
@@ -165,6 +165,6 @@ public class FaceDetectView extends SurfaceView implements SurfaceHolder.Callbac
     }
 
     public interface OnCameraListener {
-        Object onPreview(byte[] data, int width, int height);
+        Object onPreview(Bitmap bmp, byte[] data, int width, int height);
     }
 }

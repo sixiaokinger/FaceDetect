@@ -11,11 +11,8 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.ImageFormat;
 import android.graphics.Rect;
-import android.graphics.YuvImage;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -50,7 +47,6 @@ import com.arcsoft.facetracking.AFT_FSDKVersion;
 import com.dk.bleNfc.Tool.StringTool;
 import com.guo.android_extend.image.ImageConverter;
 import com.guo.android_extend.java.AbsLoop;
-import com.guo.android_extend.java.ExtByteArrayOutputStream;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -116,6 +112,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     private byte[] mImageNV21 = null;
     private AFR_FSDKFace rFace = null;
     private AFT_FSDKFace tFace = null;
+    private Bitmap mFaceBitmap = null;
 
     private boolean mGetCertificate = false;
     private boolean mMatched = false;
@@ -509,7 +506,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     };
 
     @Override
-    public Object onPreview(byte[] data, int width, int height) {
+    public Object onPreview(Bitmap bmp, byte[] data, int width, int height) {
         AFT_FSDKError tError = tEngine.AFT_FSDK_FaceFeatureDetect(data, width, height, AFT_FSDKEngine.CP_PAF_NV21, tFaces);
         for (AFT_FSDKFace face : tFaces) {
             Log.d(TAG, "onPreview: Face: " + face.toString());
@@ -522,6 +519,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
             if (mGetCertificate) {
                 tFace = tFaces.get(0).clone();
                 mImageNV21 = data.clone();
+                mFaceBitmap = bmp;
             }
         }
         tFaces.clear();
@@ -846,15 +844,13 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                 rError = engine.AFR_FSDK_FacePairMatching(result, mMatchingData.face, score);
                 Log.d(TAG, "Score:" + score.getScore() + ", mAFR_FSDKFace=" + (mMatchingData.face == null) + ", AFR_FSDK_FacePairMatching=" + rError.getCode());
                 if (score.getScore() >= 0.5 && mImageNV21 != null) {
-                    byte[] data = mImageNV21;
-                    YuvImage yuv = new YuvImage(data, ImageFormat.NV21, ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT, null);
-                    ExtByteArrayOutputStream ops = new ExtByteArrayOutputStream();
-                    yuv.compressToJpeg(tFace.getRect(), 100, ops);
-                    final Bitmap bmp = BitmapFactory.decodeByteArray(ops.getByteArray(), 0, ops.getByteArray().length);
+                    Bitmap face_bitmap = Bitmap.createBitmap(ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT, Bitmap.Config.RGB_565);
+                    Canvas face_canvas = new Canvas(face_bitmap);
+                    face_canvas.drawBitmap(mFaceBitmap, tFace.getRect(), new Rect(0, 0, ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT), null);
                     Message msg = new Message();
                     msg.what = MSG_CODE;
                     msg.arg1 = MSG_EVENT_MATCH;
-                    msg.obj = bmp;
+                    msg.obj = face_bitmap;
                     mUIHandler.sendMessage(msg);
                 }
                 mImageNV21 = null;
