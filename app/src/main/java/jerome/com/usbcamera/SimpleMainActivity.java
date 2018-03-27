@@ -93,6 +93,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     private FaceDetectView mUsbCamera;
     private ImageView mImgCertificate;
     private ImageView mImgMatched;
+    private ImageView mPassed;
     private int mGMCount = 0;
     private boolean mIsGM = false;
 
@@ -140,6 +141,8 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
         mImgCertificate.setVisibility(View.INVISIBLE);
         mImgMatched = (ImageView) findViewById(R.id.img_matched);
         mImgMatched.setVisibility(View.INVISIBLE);
+        mPassed = (ImageView) findViewById(R.id.passed);
+        mPassed.setVisibility(View.INVISIBLE);
 
         mBtnRegister = (ImageButton) findViewById(R.id.btn_register);
         mBtnRegister.setOnClickListener(this);
@@ -779,8 +782,10 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                     final Bitmap face = (Bitmap) msg.obj;
                     mImgMatched.setImageBitmap(face);
                     mImgMatched.setVisibility(View.VISIBLE);
+                    mPassed.setVisibility(View.VISIBLE);
                 } else if (msg.arg1 == MSG_EVENT_START) {
                     mImgMatched.setVisibility(View.INVISIBLE);
+                    mPassed.setVisibility(View.INVISIBLE);
                     mFRAbsLoop = new FRAbsLoop();
                     mFRAbsLoop.start();
                 } else if (msg.arg1 == MSG_EVENT_MATCH) {
@@ -788,7 +793,8 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                     Bitmap bmp = (Bitmap) msg.obj;
                     mImgMatched.setImageBitmap(bmp);
                     mImgMatched.setVisibility(View.VISIBLE);
-                    Toast.makeText(SimpleMainActivity.this, "验证通过", Toast.LENGTH_SHORT).show();
+                    mPassed.setVisibility(View.VISIBLE);
+//                    Toast.makeText(SimpleMainActivity.this, "验证通过", Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "handleMessage: MSG_EVENT_MATCH");
                 } else if (msg.arg1 == MSG_EVENT_CATCH_CARD) {
                     final Bitmap card = (Bitmap) msg.obj;
