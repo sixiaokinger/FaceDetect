@@ -530,7 +530,6 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_register:
-                // TODO: 2018/3/23 save info
                 if (mNearestBle == null) {
                     SearchNearestBleDevice();
                     return;
