@@ -533,17 +533,17 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_register:
-                if (mNearestBle == null) {
-                    SearchNearestBleDevice();
-                    return;
-                }
-
                 if (!mData.saveInfo(mName, mCardId, mImgCertificate.getDrawable(), rFace)) {
                     Toast.makeText(SimpleMainActivity.this, "注册信息不全，注册失败", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Toast.makeText(SimpleMainActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
                 }
+                mBtnRegister.setVisibility(View.INVISIBLE);
+                mBtnRegFace.setVisibility(View.INVISIBLE);
+                mBtnRegCard.setVisibility(View.INVISIBLE);
+                mTextInfo.setVisibility(View.INVISIBLE);
+                mIsGM = false;
 
                 break;
             case R.id.btn_reg_face:
@@ -556,6 +556,9 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                 startActivityForResult(getImageByalbum, REQUEST_CODE_IMAGE_OP);
                 break;
             case R.id.btn_gm:
+                if (mNearestBle == null) {
+                    SearchNearestBleDevice();
+                }
                 if (mGMCount++ > 4) {
                     mBtnRegister.setVisibility(View.VISIBLE);
                     mBtnRegFace.setVisibility(View.VISIBLE);
