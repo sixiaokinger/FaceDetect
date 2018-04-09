@@ -516,7 +516,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
         }
         Rect[] rects = new Rect[tFaces.size()];
         for (int i = 0; i < tFaces.size(); i++) {
-            rects[i] = new Rect(tFaces.get(i).getRect());
+            rects[i] = new Rect(tFaces.get(i).getRect().left - 144, tFaces.get(i).getRect().top, tFaces.get(i).getRect().right - 144, tFaces.get(i).getRect().bottom);
         }
         if (!tFaces.isEmpty()) {
             if (mGetCertificate) {
@@ -807,6 +807,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
             }
             else if (msg.what == MSG_NFC_CONNECTED) {
                 Toast.makeText(SimpleMainActivity.this, "准备完毕", Toast.LENGTH_SHORT).show();
+                findViewById(R.id.black_screen).setVisibility(View.INVISIBLE);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -851,7 +852,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                 AFR_FSDKMatching score = new AFR_FSDKMatching();
                 rError = engine.AFR_FSDK_FacePairMatching(result, mMatchingData.face, score);
                 Log.d(TAG, "Score:" + score.getScore() + ", mAFR_FSDKFace=" + (mMatchingData.face == null) + ", AFR_FSDK_FacePairMatching=" + rError.getCode());
-                if (score.getScore() >= 0.5 && mImageNV21 != null) {
+                if (score.getScore() >= 0.6 && mImageNV21 != null) {
                     Bitmap face_bitmap = Bitmap.createBitmap(ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT, Bitmap.Config.RGB_565);
                     Canvas face_canvas = new Canvas(face_bitmap);
                     face_canvas.drawBitmap(mFaceBitmap, tFace.getRect(), new Rect(0, 0, ImageProc.IMG_WIDTH, ImageProc.IMG_HEIGHT), null);
