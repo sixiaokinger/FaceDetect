@@ -516,7 +516,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
         }
         Rect[] rects = new Rect[tFaces.size()];
         for (int i = 0; i < tFaces.size(); i++) {
-            rects[i] = new Rect(tFaces.get(i).getRect().left - 144, tFaces.get(i).getRect().top, tFaces.get(i).getRect().right - 144, tFaces.get(i).getRect().bottom);
+            rects[i] = new Rect(tFaces.get(i).getRect().left - 128, tFaces.get(i).getRect().top, tFaces.get(i).getRect().right - 128, tFaces.get(i).getRect().bottom);
         }
         if (!tFaces.isEmpty()) {
             if (mGetCertificate) {
