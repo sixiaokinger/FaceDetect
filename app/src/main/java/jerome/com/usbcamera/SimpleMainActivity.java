@@ -51,6 +51,8 @@ import com.guo.android_extend.java.AbsLoop;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -82,6 +84,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     private final static int MSG_EVENT_MATCH = 0x1002;
     private final static int MSG_EVENT_START = 0x1003;
     private final static int MSG_EVENT_CATCH_CARD = 0x1004;
+    private final static int MSG_EVENT_RESET = 0x1005;
     private final static int MSG_NFC_CONNECTED = 0x2000;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final int REQUEST_CODE_IMAGE_OP = 2;
@@ -803,6 +806,10 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                     final Bitmap card = (Bitmap) msg.obj;
                     mImgCertificate.setImageBitmap(card);
                     mImgCertificate.setVisibility(View.VISIBLE);
+                } else if (msg.arg1 == MSG_EVENT_RESET) {
+                    mImgCertificate.setVisibility(View.INVISIBLE);
+                    mImgMatched.setVisibility(View.INVISIBLE);
+                    mPassed.setVisibility(View.INVISIBLE);
                 }
             }
             else if (msg.what == MSG_NFC_CONNECTED) {
@@ -861,6 +868,18 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                     msg.arg1 = MSG_EVENT_MATCH;
                     msg.obj = face_bitmap;
                     mUIHandler.sendMessage(msg);
+
+                    Timer timer = new Timer();
+                    TimerTask task = new TimerTask() {
+                        @Override
+                        public void run() {
+                            Message msg = new Message();
+                            msg.what = MSG_CODE;
+                            msg.arg1 = MSG_EVENT_RESET;
+                            mUIHandler.sendMessage(msg);
+                        }
+                    };
+                    timer.schedule(task, 10000);
                 }
                 mImageNV21 = null;
             }
