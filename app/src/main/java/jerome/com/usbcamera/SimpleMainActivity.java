@@ -26,8 +26,10 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -85,6 +87,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     private final static int MSG_EVENT_START = 0x1003;
     private final static int MSG_EVENT_CATCH_CARD = 0x1004;
     private final static int MSG_EVENT_RESET = 0x1005;
+    private final static int MSG_EVENT_CATCH_FACE = 0x1006;
     private final static int MSG_NFC_CONNECTED = 0x2000;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final int REQUEST_CODE_IMAGE_OP = 2;
@@ -97,6 +100,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
     private ImageView mImgCertificate;
     private ImageView mImgMatched;
     private ImageView mPassed;
+    private ImageView mBorder;
     private int mGMCount = 0;
     private boolean mIsGM = false;
 
@@ -146,6 +150,8 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
         mImgMatched.setVisibility(View.INVISIBLE);
         mPassed = (ImageView) findViewById(R.id.passed);
         mPassed.setVisibility(View.INVISIBLE);
+        mBorder = (ImageView) findViewById(R.id.border);
+        mBorder.setVisibility(View.INVISIBLE);
 
         mBtnRegister = (ImageButton) findViewById(R.id.btn_register);
         mBtnRegister.setOnClickListener(this);
@@ -517,10 +523,24 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
         for (AFT_FSDKFace face : tFaces) {
             Log.d(TAG, "onPreview: Face: " + face.toString());
         }
+        int index = 0;
+        float area = 0;
         Rect[] rects = new Rect[tFaces.size()];
         for (int i = 0; i < tFaces.size(); i++) {
             rects[i] = new Rect(tFaces.get(i).getRect().left - 128, tFaces.get(i).getRect().top - 70, tFaces.get(i).getRect().right - 128, tFaces.get(i).getRect().bottom - 70);
+            if (area < rects[i].width() * rects[i].height()) {
+                area = rects[i].width() * rects[i].height();
+                index = i;
+            }
         }
+
+        Message msg = new Message();
+        msg.what = MSG_CODE;
+        msg.arg1 = MSG_EVENT_CATCH_FACE;
+        msg.arg2 = (int)area;
+        if (area > 0) msg.obj = rects[index];
+        mUIHandler.sendMessage(msg);
+
         if (!tFaces.isEmpty()) {
             if (mGetCertificate) {
                 tFace = tFaces.get(0).clone();
@@ -810,6 +830,22 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                     mImgCertificate.setVisibility(View.INVISIBLE);
                     mImgMatched.setVisibility(View.INVISIBLE);
                     mPassed.setVisibility(View.INVISIBLE);
+                } else if (msg.arg1 == MSG_EVENT_CATCH_FACE) {
+                    float area = msg.arg2;
+                    if (area > 0) {
+                        Rect rect = (Rect) msg.obj;
+                        ViewGroup.MarginLayoutParams margin9 = new ViewGroup.MarginLayoutParams(
+                                mBorder.getLayoutParams());
+                        margin9.setMargins(rect.left, rect.top, 0, 0);
+                        RelativeLayout.LayoutParams layoutParams9 = new RelativeLayout.LayoutParams(margin9);
+                        layoutParams9.height = rect.height();
+                        layoutParams9.width = rect.width();
+                        mBorder.setLayoutParams(layoutParams9);
+                        mBorder.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        mBorder.setVisibility(View.INVISIBLE);
+                    }
                 }
             }
             else if (msg.what == MSG_NFC_CONNECTED) {

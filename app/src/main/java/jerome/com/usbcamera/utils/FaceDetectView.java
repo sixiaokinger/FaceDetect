@@ -133,7 +133,7 @@ public class FaceDetectView extends SurfaceView implements SurfaceHolder.Callbac
                 canvas.drawBitmap(bmp, null, rect, null);
                 if (rects != null) {
                     for (int i = 0; i < rects.length; i++){
-                        canvas.drawRect(rects[i], paint);
+//                        canvas.drawRect(rects[i], paint);
                     }
                 }
                 getHolder().unlockCanvasAndPost(canvas);
