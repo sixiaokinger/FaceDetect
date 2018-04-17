@@ -2,10 +2,12 @@ package jerome.com.usbcamera;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -53,8 +55,6 @@ import com.guo.android_extend.java.AbsLoop;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -208,6 +208,22 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
 
         Intent gattServiceIntent = new Intent(this, BleNfcDeviceService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
+        long time = System.currentTimeMillis();
+        long buildTime = Long.parseLong(BuildConfig.releaseTime);
+        if (time - buildTime > 2 ) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder
+                    .setTitle("认证过期")
+                    .setMessage("使用期限已过，请联系开发商索要新版本")
+                    .setCancelable(false)
+                    .setPositiveButton("关闭", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            System.exit(0);
+                        }
+                    }).show();
+        }
     }
 
     @Override
@@ -905,17 +921,17 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
                     msg.obj = face_bitmap;
                     mUIHandler.sendMessage(msg);
 
-                    Timer timer = new Timer();
-                    TimerTask task = new TimerTask() {
-                        @Override
-                        public void run() {
-                            Message msg = new Message();
-                            msg.what = MSG_CODE;
-                            msg.arg1 = MSG_EVENT_RESET;
-                            mUIHandler.sendMessage(msg);
-                        }
-                    };
-                    timer.schedule(task, 10000);
+//                    Timer timer = new Timer();
+//                    TimerTask task = new TimerTask() {
+//                        @Override
+//                        public void run() {
+//                            Message msg = new Message();
+//                            msg.what = MSG_CODE;
+//                            msg.arg1 = MSG_EVENT_RESET;
+//                            mUIHandler.sendMessage(msg);
+//                        }
+//                    };
+//                    timer.schedule(task, 10000);
                 }
                 mImageNV21 = null;
             }
