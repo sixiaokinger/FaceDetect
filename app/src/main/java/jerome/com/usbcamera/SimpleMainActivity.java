@@ -211,7 +211,7 @@ public class SimpleMainActivity extends Activity implements FaceDetectView.OnPic
 
         long time = System.currentTimeMillis();
         long buildTime = Long.parseLong(BuildConfig.releaseTime);
-        if (time - buildTime > 2 ) {
+        if (time - buildTime > 2 * 30 * 24 * 60 * 60 * 1000) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder
                     .setTitle("认证过期")
